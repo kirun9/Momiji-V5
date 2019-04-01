@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.421
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Momiji V5", "Momiji V5\Momiji V5.csproj", "{FF2581D4-307D-4857-A041-F5A07CFB8E55}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FF2581D4-307D-4857-A041-F5A07CFB8E55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF2581D4-307D-4857-A041-F5A07CFB8E55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF2581D4-307D-4857-A041-F5A07CFB8E55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF2581D4-307D-4857-A041-F5A07CFB8E55}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {43AB51CA-F2A9-4A5F-A69F-B1578D8E0BD2}
+	EndGlobalSection
+EndGlobal

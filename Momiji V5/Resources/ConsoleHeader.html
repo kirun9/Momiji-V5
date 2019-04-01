@@ -1,0 +1,139 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style>
+        table {
+            width: 640px;
+            max-width: 640px;
+            min-width: 640px;
+            color: white;
+            font: 12pt Unifont, Arial;
+            table-layout: fixed;
+        }
+
+        div.logo {
+            font: 12pt Unifont;
+            color: yellow;
+        }
+
+        .bold {
+            font-weight: bold;
+        }
+
+        .row1 {
+            white-space: nowrap;
+            vertical-align: text-top;
+            min-width: 70px;
+            max-width: 70px;
+        }
+
+        .row2 {
+            vertical-align: text-top;
+            min-width: 120px;
+            max-width: 120px;
+            word-wrap: break-word;
+        }
+
+        .row3 {
+            vertical-align: text-top;
+            max-width: 450px;
+            max-width: 450px;
+            word-wrap: break-word;
+        }
+
+        .multirow {
+            vertical-align: text-top;
+            max-width: 640px;
+            min-width: 640px;
+            word-wrap: break-word;
+        }
+
+        .error {
+            color: red;
+        }
+
+        .warning {
+            color: yellow;
+        }
+
+        .user {
+            color: aqua;
+        }
+
+        .module {
+            color: orange;
+        }
+
+    </style>
+    <script type="text/javascript">
+        var httpRequestStatus;
+        var timestep = 5000;
+
+        function init() {
+            "use strict";
+            startLoop();
+        }
+
+        function getRequest() {
+            "use strict";
+            try {
+                return new ActiveXObject("Msxml2.XMLHTTP");
+            } catch (e) {
+                try {
+                    return new ActiveXObject("Microsoft.XMLHTTP");
+                } catch (err) { }
+            }
+            if (typeof XMLHttpRequest !== "undefined") {
+                return new XMLHttpRequest();
+            }
+            return null;
+        }
+
+        function startLoop() {
+            "use strict";
+
+            if (!httpRequestStatus || httpRequestStatus.readyState === 0) {
+                httpRequestStatus = getRequest();
+                try {
+                    httpRequestStatus.open("GET", "http://localhost:12369/log.html", true);
+                    httpRequestStatus.onreadystatechange = done;
+                    httpRequestStatus.send(null);
+                } catch (e) {
+                    alert(e);
+                }
+            }
+            setTimeout(startLoop, timestep);
+        }
+
+        function done() {
+            if (httpRequestStatus && httpRequestStatus.readyState === 4) {
+                var element = document.getElementById("LogTable");
+                if (element) {
+                    element.innerHTML = httpRequestStatus.responseText;
+                }
+                httpRequestStatus = null;
+            }
+        }
+    </script>
+</head>
+<body style="background-color: black; color: white;" onload="init()">
+    <div class="logo">
+        888b&nbsp&nbsp&nbsp&nbsp&nbspd888&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspd8b&nbsp&nbspd8b&nbspd8b&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp.d88&nbsp8888888b.&nbsp&nbsp88b.<br />
+        8888b&nbsp&nbsp&nbspd8888&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspY8P&nbsp&nbspY8P&nbspY8P&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspd88P"&nbsp888&nbsp&nbsp&nbspY88b&nbsp"Y88b<br />
+        88888b.d88888&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspd88P&nbsp&nbsp&nbsp888&nbsp&nbsp&nbsp&nbsp888&nbsp&nbsp&nbspY88b<br />
+        888Y88888P888&nbsp&nbsp.d88b.&nbsp&nbsp88888b.d88b.&nbsp&nbsp888&nbsp8888&nbsp888&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp888&nbsp&nbsp&nbsp&nbsp888&nbsp&nbsp&nbspd88P&nbsp&nbsp&nbsp&nbsp888<br />
+        888&nbspY888P&nbsp888&nbspd88""88b&nbsp888&nbsp"888&nbsp"88b&nbsp888&nbsp"888&nbsp888&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp888&nbsp&nbsp&nbsp&nbsp8888888P"&nbsp&nbsp&nbsp&nbsp&nbsp888<br />
+        888&nbsp&nbspY8P&nbsp&nbsp888&nbsp888&nbsp&nbsp888&nbsp888&nbsp&nbsp888&nbsp&nbsp888&nbsp888&nbsp&nbsp888&nbsp888&nbsp&nbsp&nbsp&nbsp&nbsp&nbspY88b&nbsp&nbsp&nbsp888&nbspT88b&nbsp&nbsp&nbsp&nbsp&nbspd88P<br />
+        888&nbsp&nbsp&nbsp"&nbsp&nbsp&nbsp888&nbspY88..88P&nbsp888&nbsp&nbsp888&nbsp&nbsp888&nbsp888&nbsp&nbsp888&nbsp888&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspY88b.&nbsp888&nbsp&nbspT88b&nbsp&nbsp.d88P<br />
+        888&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp888&nbsp&nbsp"Y88P"&nbsp&nbsp888&nbsp&nbsp888&nbsp&nbsp888&nbsp888&nbsp&nbsp888&nbsp888&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp"Y88&nbsp888&nbsp&nbsp&nbspT88b&nbsp88P"<br />
+        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp888<br />
+        &nbsp&nbspUsing&nbspGNU&nbspUnifont&nbsptrutype&nbspfont&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspd88P&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspby&nbspKrystian&nbspPawełek<br />
+        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp888P"&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp(kirun9)<br />
+    </div><br />
+    <div id="LogTable">
+
+    </div>
+</body>
+</html>
