@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Drawing;
-using System.IO;
 using System.Windows.Forms;
 using Momiji.Bot.V5.Core.Controls.Panels;
 
@@ -20,23 +19,9 @@ namespace Momiji.Bot.V5.Core
 			InternalServer.Server server = new InternalServer.Server();
 			server.Start();
 
-
 			consolePanel = new ConsolePanel();
-			//consolePanel.Append("Momiji V" + ProductVersion);
-			//Program.TestConsole(consolePanel);
-
-			
-
 			consolePanel.Top = 3;
 			consolePanel.Left = 3;
-			/*try
-			{
-				throw new EndOfStreamException("Test exception");
-			}
-			catch (Exception ex)
-			{
-				consolePanel.Append(DateTime.Now.ToString("HH:mm:ss"), this.GetType().Name, ex.ToString(), ConsoleMessageType.Warning);
-			}*/
 
 
 			MainPanel.Controls.Add(consolePanel);
@@ -90,7 +75,6 @@ namespace Momiji.Bot.V5.Core
 
 		private void ConsoleButton_MouseClick(Object sender, MouseEventArgs e)
 		{
-			//System.Diagnostics.Debug.WriteLine("Clicked");
 			MainPanel.Controls.Clear();
 			MainPanel.Controls.Add(consolePanel);
 		}
@@ -98,8 +82,7 @@ namespace Momiji.Bot.V5.Core
 		private void ModulesButton_MouseClick(Object sender, MouseEventArgs e)
 		{
 			System.Diagnostics.Debug.WriteLine("Clicked");
-			consolePanel.Append(DateTime.Now.ToString("hh:mm:ss"), "System", @"<div style=""color:red !important"">Test Message</div>");
-			consolePanel.UpdateBrowser();
+
 		}
 	}
 }

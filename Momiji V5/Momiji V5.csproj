@@ -75,13 +75,14 @@
     <Compile Include="Controls\CircularPictureBox.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="InternalServer\ConsoleMessageType.cs" />
     <Compile Include="Controls\Panels\ConsolePanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Controls\Panels\ConsolePanel.Designer.cs">
       <DependentUpon>ConsolePanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\Panels\HTMLStringExtension.cs" />
+    <Compile Include="InternalServer\HTMLStringExtension.cs" />
     <Compile Include="Controls\TabButton.cs">
       <SubType>UserControl</SubType>
     </Compile>

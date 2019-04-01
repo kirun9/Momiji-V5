@@ -1,13 +1,7 @@
-﻿
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using Momiji.Bot.V5.Core.Controls.Panels;
 
 namespace Momiji.Bot.V5.Core.InternalServer
 {
@@ -19,8 +13,6 @@ namespace Momiji.Bot.V5.Core.InternalServer
 		{
 			listener = new HttpListener();
 			listener.Prefixes.Add("http://localhost:12369/");
-			Program.TestConsole(this);
-			Program.TestConsole2(this);
 		}
 
 		public void Start()
@@ -37,7 +29,9 @@ namespace Momiji.Bot.V5.Core.InternalServer
 						context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
 						context.Response.Headers.Add("Access-Control-Allow-Methods", "POST, GET");
 						var writer = new StreamWriter(context.Response.OutputStream);
-						writer.Write(Program.ReadHtmlConsoleHeader());
+						var html = Properties.Resources.ConsoleHeader;
+						html = html.Replace("<MomijiVersion />", GetType().Assembly.GetName().Version.ToString(4));
+						writer.Write(html);
 						writer.Close();
 						context.Response.Close();
 					}

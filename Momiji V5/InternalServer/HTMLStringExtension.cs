@@ -1,4 +1,4 @@
-﻿namespace Momiji.Bot.V5.Core.Controls.Panels
+﻿namespace Momiji.Bot.V5.Core.InternalServer
 {
 	public static class HTMLStringExtension
 	{
