@@ -26,8 +26,6 @@ namespace Momiji.Bot.V5.Core.InternalServer
 					string webFilePath = context.Request.Url.AbsolutePath.Substring(1);
 					if (webFilePath.Equals("main.html"))
 					{
-						//context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
-						//context.Response.Headers.Add("Access-Control-Allow-Methods", "POST, GET");
 						var writer = new StreamWriter(context.Response.OutputStream);
 						var html = Properties.Resources.ConsoleHeader;
 						html = html.Replace("<MomijiVersion />", GetType().Assembly.GetName().Version.ToString(4));
