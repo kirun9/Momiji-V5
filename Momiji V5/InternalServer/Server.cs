@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Threading;
@@ -7,12 +8,15 @@ namespace Momiji.Bot.V5.Core.InternalServer
 {
 	internal class Server
 	{
+		private static Server Instance;
+		private LogMessage[] logMessages = new LogMessage[0];
 		private HttpListener listener;
-		private string log;
+
 		public Server()
 		{
 			listener = new HttpListener();
 			listener.Prefixes.Add("http://localhost:12369/");
+			Instance = this;
 		}
 
 		public void Start()
@@ -50,7 +54,7 @@ namespace Momiji.Bot.V5.Core.InternalServer
 					{
 						var writer = new StreamWriter(context.Response.OutputStream);
 						var output = "<table>\n<colgroup><col width=\"70px\" /><col width=\"120px\" /><col width=\"430px\" /></colgroup>\n";
-						output += log;
+						output += GetLog();
 						output += "\n</table>\n";
 						writer.Write(output);
 						writer.Close();
@@ -66,40 +70,52 @@ namespace Momiji.Bot.V5.Core.InternalServer
 			listener.Stop();
 		}
 
-		public void Append(string date, string moduleName, string message, ConsoleMessageType messageType = ConsoleMessageType.Info)
+		public void Append(LogMessage message)
 		{
-			var colors = ParseColors(messageType);
-			message = message.Trim();
-			message = message.PreventInjection();
-			message = message.Replace("\n", "<br />\n");
-
-			if (messageType == ConsoleMessageType.Warning || messageType == ConsoleMessageType.Error)
+			if (logMessages.Length >= 100)
 			{
-				log += $"<tr><td class=\"row1{(colors.Item1 != "" ? " " + colors.Item1 : "")}\">{date}</td><td class=\"row2{(colors.Item2 != "" ? " " + colors.Item2 : "")}\">{moduleName}</td><td class=\"row3{(colors.Item3 != "" ? " " + colors.Item3 : "")}\">Caught Exception:</td></tr>\n";
-				log += $"<tr><td class=\"multirow{(colors.Item3 != "" ? " " + colors.Item3 : "")}\" colspan=3>{message}</td></tr>\n";
+				var temp = new LogMessage[100];
+				for (int i = 0; i < 99; i++)
+				{
+					temp[i] = temp[i + 1];
+				}
+				temp[99] = message;
+				logMessages = temp;
 			}
 			else
 			{
-				log += $"<tr><td class=\"row1{(colors.Item1 != "" ? " " + colors.Item1 : "")}\">{date}</td><td class=\"row2{(colors.Item2 != "" ? " " + colors.Item2 : "")}\">{moduleName}</td><td class=\"row3{(colors.Item3 != "" ? " " + colors.Item3 : "")}\">{message}</td></tr>\n";
+				var temp = new LogMessage[logMessages.Length + 1];
+				int i = 0;
+				for (; i < logMessages.Length; i++)
+				{
+					temp[i] = logMessages[i];
+				}
+				temp[i] = message;
+				logMessages = temp;
 			}
 		}
-		public Tuple<string, string, string> ParseColors(ConsoleMessageType type)
+		public void Append(string date, string moduleName, string message, ConsoleMessageType messageType = ConsoleMessageType.Info)
 		{
-			switch (type)
+			LogMessage logMessage = new LogMessage(date, moduleName, message, messageType);
+			Append(logMessage);
+		}
+
+		public static void Log(string date, string moduleName, string message,ConsoleMessageType messageType = ConsoleMessageType.Info) => Instance.Append(date, moduleName, message, messageType);
+
+		public static void Log(LogMessage message) => Instance.Append(message);
+
+		public static void StartServer() => Instance.Start();
+
+		public static void StopServer() => Instance.Stop();
+
+		private string GetLog()
+		{
+			string output = "";
+			foreach (LogMessage message in logMessages)
 			{
-				case ConsoleMessageType.Error:
-					return Tuple.Create("error", "error", "error");
-				case ConsoleMessageType.Warning:
-					return Tuple.Create("warning", "warning", "warning");
-				case ConsoleMessageType.User:
-					return Tuple.Create("", "user", "user");
-				case ConsoleMessageType.Info:
-					return Tuple.Create("", "", "");
-				case ConsoleMessageType.Module:
-					return Tuple.Create("", "module", "module");
-				default:
-					return Tuple.Create("warning", "warning", "warning");
+				output += message.ToString();
 			}
+			return output;
 		}
 	}
 }
