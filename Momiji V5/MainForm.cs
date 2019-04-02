@@ -81,6 +81,7 @@ namespace Momiji.Bot.V5.Core
 
 		private void ModulesButton_MouseClick(Object sender, MouseEventArgs e)
 		{
+			InternalServer.Server.Log("15:59:00", "Test module", "Hello!");
 			System.Diagnostics.Debug.WriteLine("Clicked");
 		}
 	}

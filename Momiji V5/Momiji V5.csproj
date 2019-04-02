@@ -89,6 +89,7 @@
     <Compile Include="Controls\TabButton.Designer.cs">
       <DependentUpon>TabButton.cs</DependentUpon>
     </Compile>
+    <Compile Include="InternalServer\LogMessage.cs" />
     <Compile Include="InternalServer\Server.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
