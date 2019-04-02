@@ -152,7 +152,7 @@
 			this.ModulesButton.Selected = false;
 			this.ModulesButton.Size = new System.Drawing.Size(144, 50);
 			this.ModulesButton.TabIndex = 1;
-			this.ModulesButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ModulesButton_MouseClick);
+			this.ModulesButton.ButtonClick += new System.Windows.Forms.MouseEventHandler(this.ModulesButton_MouseClick);
 			// 
 			// MomijiIcon
 			// 

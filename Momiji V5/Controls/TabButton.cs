@@ -40,6 +40,14 @@ namespace Momiji.Bot.V5.Core.Controls
 					button.Invalidate();
 				}
 			}
+			OnClick(e);
+		}
+
+		public event MouseEventHandler ButtonClick;
+
+		private void OnClick(MouseEventArgs e)
+		{
+			ButtonClick?.Invoke(this, e);
 		}
 	}
 }
