@@ -66,27 +66,93 @@ namespace Momiji.Bot.V5.Core.Properties {
         ///&lt;head&gt;
         ///    &lt;meta charset=&quot;utf-8&quot; /&gt;
         ///    &lt;title&gt;&lt;/title&gt;
-        ///    &lt;style&gt;
-        ///        table {
-        ///            width: 630px;
-        ///            font: bold 12pt Unifont, Arial;
-        ///        }
-        ///
-        ///        .row1 {
-        ///            color: white;
-        ///            white-space: nowrap;
-        ///        }
-        ///
-        ///        .row2 {
-        ///            color: white;
-        ///            white-space: nowrap;
-        ///            text-overflow: ellipsis;
-        ///            overflow: hidden;
-        ///            max-width: 1px;        /// [rest of string was truncated]&quot;;.
+        ///    &lt;link rel=&quot;stylesheet&quot; href=&quot;console/ConsoleStyle.css&quot; /&gt;
+        ///    &lt;script src=&quot;console/ConsoleScript.js&quot;&gt;&lt;/script&gt;
+        ///&lt;/head&gt;
+        ///&lt;body style=&quot;background-color: black; color: white;&quot; onload=&quot;init()&quot;&gt;
+        ///    &lt;div class=&quot;logo&quot;&gt;
+        ///        888b&amp;nbsp&amp;nbsp&amp;nbsp&amp;nbsp&amp;nbspd888&amp;nbsp&amp;nbsp&amp;nbsp&amp;nbsp&amp;nbsp&amp;nbsp&amp;nbsp&amp;nbsp&amp;nbsp&amp;nbsp&amp;nbsp&amp;nbsp&amp;nbsp&amp;nbsp&amp;nbsp&amp;nbsp&amp;nbsp&amp;nbsp&amp;nbsp&amp;nbsp&amp;nbsp&amp;nbsp&amp;nbsp&amp;nbs [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string ConsoleHeader {
             get {
                 return ResourceManager.GetString("ConsoleHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to var httpRequestStatus;
+        ///var timestep = 5000;
+        ///
+        ///function init() {
+        ///    &quot;use strict&quot;;
+        ///    startLoop();
+        ///}
+        ///
+        ///function getRequest() {
+        ///    &quot;use strict&quot;;
+        ///    try {
+        ///        return new ActiveXObject(&quot;Msxml2.XMLHTTP&quot;);
+        ///    } catch (e) {
+        ///        try {
+        ///            return new ActiveXObject(&quot;Microsoft.XMLHTTP&quot;);
+        ///        } catch (err) { }
+        ///    }
+        ///    if (typeof XMLHttpRequest !== &quot;undefined&quot;) {
+        ///        return new XMLHttpRequest();
+        ///    }
+        ///    return null;
+        ///}
+        ///
+        ///function startLoop() {
+        ///    &quot;use strict&quot;;
+        ///
+        ///     [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string ConsoleScript {
+            get {
+                return ResourceManager.GetString("ConsoleScript", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to table {
+        ///    width: 640px;
+        ///    max-width: 640px;
+        ///    min-width: 640px;
+        ///    color: white;
+        ///    font: 12pt Unifont, Arial;
+        ///    table-layout: fixed;
+        ///}
+        ///
+        ///div.logo {
+        ///    font: 12pt Unifont;
+        ///    color: yellow;
+        ///}
+        ///
+        ///.bold {
+        ///    font-weight: bold;
+        ///}
+        ///
+        ///.row1 {
+        ///    white-space: nowrap;
+        ///    vertical-align: text-top;
+        ///    min-width: 70px;
+        ///    max-width: 70px;
+        ///}
+        ///
+        ///.row2 {
+        ///    vertical-align: text-top;
+        ///    min-width: 120px;
+        ///    max-width: 120px;
+        ///    word-wrap: break-word;
+        ///}
+        ///
+        ///.row3 {
+        ///    vertical- [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string ConsoleStyle {
+            get {
+                return ResourceManager.GetString("ConsoleStyle", resourceCulture);
             }
         }
         

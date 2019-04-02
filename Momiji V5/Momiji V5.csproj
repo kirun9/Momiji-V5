@@ -133,6 +133,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\bot-avatar.png" />
+    <EmbeddedResource Include="Resources\ConsoleScript.js" />
+    <EmbeddedResource Include="Resources\ConsoleStyle.css" />
     <EmbeddedResource Include="Resources\ConsoleHeader.html" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

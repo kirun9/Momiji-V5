@@ -19,7 +19,6 @@ namespace Momiji.Bot.V5.Core.InternalServer
 		{
 			listener.Start();
 			Thread thread = new Thread(() => {
-				int i = 0;
 				while (listener.IsListening)
 				{
 					var context = listener.GetContext();
@@ -30,6 +29,20 @@ namespace Momiji.Bot.V5.Core.InternalServer
 						var html = Properties.Resources.ConsoleHeader;
 						html = html.Replace("<MomijiVersion />", GetType().Assembly.GetName().Version.ToString(4));
 						writer.Write(html);
+						writer.Close();
+						context.Response.Close();
+					}
+					else if (webFilePath.Equals("console/ConsoleScript.js"))
+					{
+						var writer = new StreamWriter(context.Response.OutputStream);
+						writer.Write(Properties.Resources.ConsoleScript);
+						writer.Close();
+						context.Response.Close();
+					}
+					else if (webFilePath.Equals("console/ConsoleStyle.css"))
+					{
+						var writer = new StreamWriter(context.Response.OutputStream);
+						writer.Write(Properties.Resources.ConsoleStyle);
 						writer.Close();
 						context.Response.Close();
 					}
