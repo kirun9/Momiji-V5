@@ -67,6 +67,7 @@ namespace Momiji.Bot.V5.Core
 		private void ExitButton_Click(Object sender, EventArgs e)
 		{
 			Cef.Shutdown();
+			InternalServer.Server.ShutdownServer();
 #warning Temporarily
 			Application.Exit();
 			Environment.Exit(0);
