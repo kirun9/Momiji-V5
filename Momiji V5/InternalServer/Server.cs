@@ -11,6 +11,7 @@ namespace Momiji.Bot.V5.Core.InternalServer
 		private static Server Instance;
 		private LogMessage[] logMessages = new LogMessage[0];
 		private HttpListener listener;
+		private static int MaxLogs { get; } = 100;
 
 		public Server()
 		{
@@ -72,14 +73,14 @@ namespace Momiji.Bot.V5.Core.InternalServer
 
 		public void Append(LogMessage message)
 		{
-			if (logMessages.Length >= 100)
+			if (logMessages.Length >= MaxLogs)
 			{
-				var temp = new LogMessage[100];
-				for (int i = 0; i < 99; i++)
+				var temp = new LogMessage[MaxLogs];
+				for (int i = 0; i < MaxLogs - 1; i++)
 				{
-					temp[i] = temp[i + 1];
+					temp[i] = logMessages[i + 1];
 				}
-				temp[99] = message;
+				temp[MaxLogs - 1] = message;
 				logMessages = temp;
 			}
 			else

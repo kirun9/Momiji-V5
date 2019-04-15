@@ -1,5 +1,5 @@
 ﻿var httpRequestStatus;
-var timestep = 5000;
+var timestep = 1000;
 
 function init() {
     "use strict";

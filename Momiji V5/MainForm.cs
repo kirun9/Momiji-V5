@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
+using CefSharp;
+using CefSharp.WinForms;
 using Momiji.Bot.V5.Core.Controls.Panels;
 
 namespace Momiji.Bot.V5.Core
@@ -16,6 +18,7 @@ namespace Momiji.Bot.V5.Core
 #else
 			this.WindowState = FormWindowStete.Maximized;
 #endif
+			Cef.Initialize(new CefSettings());
 			InternalServer.Server server = new InternalServer.Server();
 			server.Start();
 
@@ -63,6 +66,7 @@ namespace Momiji.Bot.V5.Core
 
 		private void ExitButton_Click(Object sender, EventArgs e)
 		{
+			Cef.Shutdown();
 #warning Temporarily
 			Application.Exit();
 			Environment.Exit(0);
@@ -79,9 +83,11 @@ namespace Momiji.Bot.V5.Core
 			MainPanel.Controls.Add(consolePanel);
 		}
 
+
+		private int i = 1;
 		private void ModulesButton_MouseClick(Object sender, MouseEventArgs e)
 		{
-			InternalServer.Server.Log("15:59:00", "Test module", "Hello!");
+			InternalServer.Server.Log("15:59:00", "Test module", "Hello! " + i++);
 			System.Diagnostics.Debug.WriteLine("Clicked");
 		}
 	}
