@@ -190,6 +190,7 @@
 			this.Name = "MainForm";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Momiji";
+			this.Load += new System.EventHandler(this.MainForm_Load);
 			this.TopPanel.ResumeLayout(false);
 			this.TabsPanel.ResumeLayout(false);
 			this.TabButtons.ResumeLayout(false);

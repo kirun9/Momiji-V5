@@ -11,6 +11,8 @@ namespace Momiji.Bot.V5.Core
 		[STAThread]
 		static void Main()
 		{
+			new InternalServer.Server();
+			InternalServer.Server.StartServer(); //Global error logging
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
 			Application.Run(new MainForm());

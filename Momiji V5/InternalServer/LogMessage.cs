@@ -23,18 +23,18 @@ namespace Momiji.Bot.V5.Core.InternalServer
 		public override string ToString()
 		{
 			var colors = ParseColors(MessageType);
-			Message = Message.Trim();
-			Message = Message.PreventInjection();
-			Message = Message.Replace("\n", "<br />\n");
+			var m = Message.Trim();
+			m = Message.PreventInjection();
+			m = Message.Replace("\n", "<br />\n");
 			string output = "";
 			if (MessageType == ConsoleMessageType.Warning || MessageType == ConsoleMessageType.Error)
 			{
 				output += $"<tr><td class=\"row1{(colors.Item1 != "" ? " " + colors.Item1 : "")}\">{Date}</td><td class=\"row2{(colors.Item2 != "" ? " " + colors.Item2 : "")}\">{ModuleName}</td><td class=\"row3{(colors.Item3 != "" ? " " + colors.Item3 : "")}\">Caught Exception:</td></tr>\n";
-				output += $"<tr><td class=\"multirow{(colors.Item3 != "" ? " " + colors.Item3 : "")}\" colspan=3>{Message}</td></tr>\n";
+				output += $"<tr><td class=\"multirow{(colors.Item3 != "" ? " " + colors.Item3 : "")}\" colspan=3>{m}</td></tr>\n";
 			}
 			else
 			{
-				output += $"<tr><td class=\"row1{(colors.Item1 != "" ? " " + colors.Item1 : "")}\">{Date}</td><td class=\"row2{(colors.Item2 != "" ? " " + colors.Item2 : "")}\">{ModuleName}</td><td class=\"row3{(colors.Item3 != "" ? " " + colors.Item3 : "")}\">{Message}</td></tr>\n";
+				output += $"<tr><td class=\"row1{(colors.Item1 != "" ? " " + colors.Item1 : "")}\">{Date}</td><td class=\"row2{(colors.Item2 != "" ? " " + colors.Item2 : "")}\">{ModuleName}</td><td class=\"row3{(colors.Item3 != "" ? " " + colors.Item3 : "")}\">{m}</td></tr>\n";
 			}
 			return output;
 		}

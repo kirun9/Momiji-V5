@@ -1,9 +1,10 @@
-﻿using System;
-using System.Drawing;
-using System.Windows.Forms;
-using CefSharp;
+﻿using CefSharp;
 using CefSharp.WinForms;
 using Momiji.Bot.V5.Core.Controls.Panels;
+using System;
+using System.Drawing;
+using System.Threading;
+using System.Windows.Forms;
 
 namespace Momiji.Bot.V5.Core
 {
@@ -19,13 +20,10 @@ namespace Momiji.Bot.V5.Core
 			this.WindowState = FormWindowStete.Maximized;
 #endif
 			Cef.Initialize(new CefSettings());
-			InternalServer.Server server = new InternalServer.Server();
-			server.Start();
 
 			consolePanel = new ConsolePanel();
 			consolePanel.Top = 3;
 			consolePanel.Left = 3;
-
 
 			MainPanel.Controls.Add(consolePanel);
 		}
@@ -83,13 +81,19 @@ namespace Momiji.Bot.V5.Core
 			MainPanel.Controls.Clear();
 			MainPanel.Controls.Add(consolePanel);
 		}
-
-
-		private int i = 1;
+		
 		private void ModulesButton_MouseClick(Object sender, MouseEventArgs e)
 		{
-			InternalServer.Server.Log("15:59:00", "Test module", "Hello! " + i++);
-			System.Diagnostics.Debug.WriteLine("Clicked");
+			
+		}
+
+		private void MainForm_Load(Object sedner, EventArgs e)
+		{
+			Thread thread = new Thread(t =>
+			{
+				MomijiHeart.Run();
+			});
+			thread.Start();
 		}
 	}
 }

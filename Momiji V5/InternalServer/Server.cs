@@ -11,12 +11,31 @@ namespace Momiji.Bot.V5.Core.InternalServer
 	{
 		private static int MaxLogs { get; } = 100;
 		private DateTime startDateTime;
-		private static Server Instance;
+		private static Server _instance;
 		private static readonly CultureInfo EnglishCulture = new CultureInfo("en-US");
 		private LogMessage[] logMessages = new LogMessage[0];
 		private HttpListener listener;
 		private string filePath;
 		private StreamWriter streamWriter;
+
+		private static Server Instance
+		{
+			get
+			{
+				if (_instance == null)
+				{
+					return new Server();
+				}
+				else
+				{
+					return _instance;
+				}
+			}
+			set
+			{
+				_instance = value;
+			}
+		}
 
 		public Server()
 		{
@@ -50,44 +69,57 @@ namespace Momiji.Bot.V5.Core.InternalServer
 		{
 			listener.Start();
 			Thread thread = new Thread(() => {
-				while (listener.IsListening)
+				try
 				{
-					var context = listener.GetContext();
-					string webFilePath = context.Request.Url.AbsolutePath.Substring(1);
-					if (webFilePath.Equals("main.html"))
+					while (listener.IsListening)
 					{
-						var writer = new StreamWriter(context.Response.OutputStream);
-						var html = Properties.Resources.ConsoleHeader;
-						html = html.Replace("<MomijiVersion />", GetType().Assembly.GetName().Version.ToString(4));
-						html = html.Replace("<Date />", "Started " + startDateTime.ToString("MMMM dd, yyyy 'at' HH:mm:ss", EnglishCulture));
-						writer.Write(html);
-						writer.Close();
-						context.Response.Close();
+					
+						var context = listener.GetContext();
+						string webFilePath = context.Request.Url.AbsolutePath.Substring(1);
+						if (webFilePath.Equals("main.html"))
+						{
+							var writer = new StreamWriter(context.Response.OutputStream);
+							var html = Properties.Resources.ConsoleHeader;
+							html = html.Replace("<MomijiVersion />", GetType().Assembly.GetName().Version.ToString(4));
+							html = html.Replace("<Date />", "Started " + startDateTime.ToString("MMMM dd, yyyy 'at' HH:mm:ss", EnglishCulture));
+							writer.Write(html);
+							writer.Close();
+							context.Response.Close();
+						}
+						else if (webFilePath.Equals("console/ConsoleScript.js"))
+						{
+							var writer = new StreamWriter(context.Response.OutputStream);
+							writer.Write(Properties.Resources.ConsoleScript);
+							writer.Close();
+							context.Response.Close();
+						}
+						else if (webFilePath.Equals("console/ConsoleStyle.css"))
+						{
+							var writer = new StreamWriter(context.Response.OutputStream);
+							writer.Write(Properties.Resources.ConsoleStyle);
+							writer.Close();
+							context.Response.Close();
+						}
+						else if (webFilePath.Equals("log.html"))
+						{
+							var writer = new StreamWriter(context.Response.OutputStream);
+							var output = "<table>\n<colgroup><col width=\"70px\" /><col width=\"120px\" /><col width=\"430px\" /></colgroup>\n";
+							output += GetLog();
+							output += "\n</table>\n";
+							writer.Write(output);
+							writer.Close();
+							context.Response.Close();
+						}
 					}
-					else if (webFilePath.Equals("console/ConsoleScript.js"))
-					{
-						var writer = new StreamWriter(context.Response.OutputStream);
-						writer.Write(Properties.Resources.ConsoleScript);
-						writer.Close();
-						context.Response.Close();
-					}
-					else if (webFilePath.Equals("console/ConsoleStyle.css"))
-					{
-						var writer = new StreamWriter(context.Response.OutputStream);
-						writer.Write(Properties.Resources.ConsoleStyle);
-						writer.Close();
-						context.Response.Close();
-					}
-					else if (webFilePath.Equals("log.html"))
-					{
-						var writer = new StreamWriter(context.Response.OutputStream);
-						var output = "<table>\n<colgroup><col width=\"70px\" /><col width=\"120px\" /><col width=\"430px\" /></colgroup>\n";
-						output += GetLog();
-						output += "\n</table>\n";
-						writer.Write(output);
-						writer.Close();
-						context.Response.Close();
-					}
+				}
+				catch (HttpListenerException ex) when (ex.ErrorCode == 995 || ex.ErrorCode == 6)
+				{
+
+				}
+				catch (HttpListenerException ex)
+				{
+					Log("Logger", ex.ToString(), ConsoleMessageType.Error);
+					Start();
 				}
 			});
 			thread.Start();
@@ -100,12 +132,12 @@ namespace Momiji.Bot.V5.Core.InternalServer
 
 		public void Shutdown()
 		{
-			listener.Stop();
-			listener.Close();
 			streamWriter.WriteLine(EndHtmlFile());
 			streamWriter.Flush();
 			streamWriter.Close();
 			streamWriter.Dispose();
+			listener.Stop();
+			listener.Close();
 		}
 
 		public void Append(LogMessage message)
@@ -139,17 +171,22 @@ namespace Momiji.Bot.V5.Core.InternalServer
 			Append(logMessage);
 		}
 
-		public static void Log(string date, string moduleName, string message,ConsoleMessageType messageType = ConsoleMessageType.Info) => Instance.Append(date, moduleName, message, messageType);
+		public void Append(DateTime time, string moduleName, string message, ConsoleMessageType messageType = ConsoleMessageType.Info)
+		{
+			LogMessage logMessage = new LogMessage(time.ToString("HH:mm:ss"), moduleName, message, messageType);
+			Append(logMessage);
+		}
+
+		public static void Log(string date, string moduleName, string message, ConsoleMessageType messageType = ConsoleMessageType.Info) => Instance.Append(date, moduleName, message, messageType);
 
 		public static void Log(LogMessage message) => Instance.Append(message);
+		public static void Log(string moduleName, string message, ConsoleMessageType messageType = ConsoleMessageType.Info) => Instance.Append(DateTime.Now, moduleName, message, messageType);
 
 		public static void StartServer() => Instance.Start();
 
 		public static void StopServer() => Instance.Stop();
-		public static void ShutdownServer()
-		{
-			Instance.Shutdown();
-		}
+
+		public static void ShutdownServer() => Instance.Shutdown();
 
 		private string GetLog()
 		{
