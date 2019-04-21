@@ -43,24 +43,26 @@ namespace Momiji.Bot.V5.Core.InternalServer
 			listener.Prefixes.Add("http://localhost:12369/");
 			startDateTime = DateTime.Now;
 			#region FileLogger
-			int fileNumber = 0;
-			string fileName = startDateTime.ToString("yyyy-MM-dd HH_mm_ss", EnglishCulture);
-			filePath = Path.Combine("logs", $"{fileName}.log.html");
-			string fullPath = Path.GetFullPath(filePath);
-			while (File.Exists(filePath))
+			if (Program.ENABLE_FILE_LOGGING)
 			{
-				filePath = Path.Combine("logs", $"{fileName} ({fileNumber++}).log.html");
-			}
-			if (!Directory.Exists(Path.GetDirectoryName(filePath)))
-			{
-				Directory.CreateDirectory(Path.GetDirectoryName(filePath));
-			}
-			streamWriter = File.CreateText(filePath);
-			streamWriter.AutoFlush = true;
+				int fileNumber = 0;
+				string fileName = startDateTime.ToString("yyyy-MM-dd HH_mm_ss", EnglishCulture);
+				filePath = Path.Combine("logs", $"{fileName}.log.html");
+				string fullPath = Path.GetFullPath(filePath);
+				while (File.Exists(filePath))
+				{
+					filePath = Path.Combine("logs", $"{fileName} ({fileNumber++}).log.html");
+				}
+				if (!Directory.Exists(Path.GetDirectoryName(filePath)))
+				{
+					Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+				}
+				streamWriter = File.CreateText(filePath);
+				streamWriter.AutoFlush = true;
 
-			var html = PrepareHtmlForFile();
-			streamWriter.WriteLine(html);
-
+				var html = PrepareHtmlForFile();
+				streamWriter.WriteLine(html);
+			}
 			#endregion
 			Instance = this;
 		}
@@ -132,10 +134,13 @@ namespace Momiji.Bot.V5.Core.InternalServer
 
 		public void Shutdown()
 		{
-			streamWriter.WriteLine(EndHtmlFile());
-			streamWriter.Flush();
-			streamWriter.Close();
-			streamWriter.Dispose();
+			if (Program.ENABLE_FILE_LOGGING)
+			{
+				streamWriter.WriteLine(EndHtmlFile());
+				streamWriter.Flush();
+				streamWriter.Close();
+				streamWriter.Dispose();
+			}
 			listener.Stop();
 			listener.Close();
 		}
@@ -163,7 +168,10 @@ namespace Momiji.Bot.V5.Core.InternalServer
 				temp[i] = message;
 				logMessages = temp;
 			}
-			streamWriter.WriteLine(message.ToString());
+			if (Program.ENABLE_FILE_LOGGING)
+			{
+				streamWriter.WriteLine(message.ToString());
+			}
 		}
 		public void Append(string date, string moduleName, string message, ConsoleMessageType messageType = ConsoleMessageType.Info)
 		{
