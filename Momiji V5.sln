@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.421
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Momiji V5", "Momiji V5\Momiji V5.csproj", "{FF2581D4-307D-4857-A041-F5A07CFB8E55}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "__Momiji V5", "Momiji V5\__Momiji V5.csproj", "{FF2581D4-307D-4857-A041-F5A07CFB8E55}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "__Serialization", "__Serialization\__Serialization.csproj", "{9DDDA85E-AA3B-4D3F-8708-913AE6454288}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,18 @@ Global
 		{FF2581D4-307D-4857-A041-F5A07CFB8E55}.Release|x64.Build.0 = Release|x64
 		{FF2581D4-307D-4857-A041-F5A07CFB8E55}.Release|x86.ActiveCfg = Release|x86
 		{FF2581D4-307D-4857-A041-F5A07CFB8E55}.Release|x86.Build.0 = Release|x86
+		{9DDDA85E-AA3B-4D3F-8708-913AE6454288}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DDDA85E-AA3B-4D3F-8708-913AE6454288}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9DDDA85E-AA3B-4D3F-8708-913AE6454288}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{9DDDA85E-AA3B-4D3F-8708-913AE6454288}.Debug|x64.Build.0 = Debug|Any CPU
+		{9DDDA85E-AA3B-4D3F-8708-913AE6454288}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9DDDA85E-AA3B-4D3F-8708-913AE6454288}.Debug|x86.Build.0 = Debug|Any CPU
+		{9DDDA85E-AA3B-4D3F-8708-913AE6454288}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9DDDA85E-AA3B-4D3F-8708-913AE6454288}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9DDDA85E-AA3B-4D3F-8708-913AE6454288}.Release|x64.ActiveCfg = Release|Any CPU
+		{9DDDA85E-AA3B-4D3F-8708-913AE6454288}.Release|x64.Build.0 = Release|Any CPU
+		{9DDDA85E-AA3B-4D3F-8708-913AE6454288}.Release|x86.ActiveCfg = Release|Any CPU
+		{9DDDA85E-AA3B-4D3F-8708-913AE6454288}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

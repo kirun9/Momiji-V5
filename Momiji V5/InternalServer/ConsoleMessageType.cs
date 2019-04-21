@@ -2,6 +2,12 @@
 {
 	public enum ConsoleMessageType
 	{
-		Error, Warning, User, Info, Module
+		Error,
+		Warning,
+		User,
+		Info,
+		Module,
+		Heart,
+		Discord
 	}
 }

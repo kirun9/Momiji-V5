@@ -53,6 +53,10 @@ namespace Momiji.Bot.V5.Core.InternalServer
 					return Tuple.Create("", "", "");
 				case ConsoleMessageType.Module:
 					return Tuple.Create("", "module", "module");
+				case ConsoleMessageType.Heart:
+					return Tuple.Create("", "", "module");
+				case ConsoleMessageType.Discord:
+					return Tuple.Create("", "discord", "discord");
 				default:
 					return Tuple.Create("warning", "warning", "warning");
 			}
