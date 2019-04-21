@@ -62,13 +62,22 @@ namespace Momiji.Bot.V5.Core
 		}
 		#endregion
 
-		private void ExitButton_Click(Object sender, EventArgs e)
+		private async void ExitButton_Click(Object sender, EventArgs e)
 		{
-			Cef.Shutdown();
-			InternalServer.Server.ShutdownServer();
 #warning Temporarily
+			InternalServer.Server.Log("Main Thread", "Closing operation was requested by administrator", InternalServer.ConsoleMessageType.Attention);
+			if (Discord.DiscordInitializer.Instance.DiscordSocketClient.ConnectionState == global::Discord.ConnectionState.Connected ||
+				Discord.DiscordInitializer.Instance.DiscordSocketClient.ConnectionState == global::Discord.ConnectionState.Connecting)
+			{
+				await Discord.DiscordInitializer.DisconnectDiscord();
+				
+			}
+			InternalServer.Server.Log("Main Thread", "Closing operation completed", InternalServer.ConsoleMessageType.Attention);
+			InternalServer.Server.ShutdownServer();
+			Cef.Shutdown();
+			MomijiHeart.Stop();
+			Environment.ExitCode = 0;
 			Application.Exit();
-			Environment.Exit(0);
 		}
 
 		private void MinimizeButton_Click(Object sender, EventArgs e)

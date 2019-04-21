@@ -1,11 +1,17 @@
 ﻿using Momiji.Bot.V5.Core.InternalServer;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Momiji.Bot.V5.Core
 {
 	public class MomijiHeart
 	{
+		private static CancellationTokenSource cancellationToken = new CancellationTokenSource();
+		public static void Stop()
+		{
+			cancellationToken.Cancel();
+		}
 		public static void Run()
 		{
 			try
@@ -16,17 +22,25 @@ namespace Momiji.Bot.V5.Core
 			{
 				Server.Log("Momiji Heart", ex.ToString(), ConsoleMessageType.Error);
 			}
+			catch (OperationCanceledException ex)
+			{
+
+			}
 			catch (Exception ex)
 			{
 				Server.Log("Momiji Heart", ex.ToString(), ConsoleMessageType.Error);
 				Run();
 			}
 		}
+
 		public async Task StartBotAsync()
 		{
 			Server.Log("Momiji Heart", "Initialization process started", ConsoleMessageType.Module);
-			throw new MomijiHeartException("There is no code to execute");
-			await Task.Delay(-1);
+			BotKeyReader.ReadKey();
+
+			await Discord.DiscordInitializer.InitializeDiscord(true);
+			
+			await Task.Delay(-1, cancellationToken.Token);
 		}
 	}
 }

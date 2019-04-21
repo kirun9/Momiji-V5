@@ -5,7 +5,7 @@ namespace Momiji.Bot.V5.Core
 {
 	static class Program
 	{
-		public static readonly bool ENABLE_FILE_LOGGING = false;
+		public static readonly bool ENABLE_FILE_LOGGING = true;
 		/// <summary>
 		/// The main entry point for the application.
 		/// </summary>

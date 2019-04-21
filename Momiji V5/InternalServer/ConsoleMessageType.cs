@@ -8,6 +8,7 @@
 		Info,
 		Module,
 		Heart,
-		Discord
+		Discord,
+		Attention
 	}
 }

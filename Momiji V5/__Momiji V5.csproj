@@ -183,6 +183,13 @@
     <Compile Include="Controls\CircularPictureBox.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Discord\DiscordInitializer.cs" />
+    <Compile Include="Discord\CommandServiceConfig.cs" />
+    <Compile Include="Discord\DiscordConfig.cs" />
+    <Compile Include="Discord\DiscordInitializer.Static.cs">
+      <DependentUpon>DiscordInitializer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Discord\DiscordSocketConfig.cs" />
     <Compile Include="InternalServer\ConsoleMessageType.cs" />
     <Compile Include="Controls\Panels\ConsolePanel.cs">
       <SubType>UserControl</SubType>
