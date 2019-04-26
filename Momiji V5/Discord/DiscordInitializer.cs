@@ -5,6 +5,10 @@ using System.Threading.Tasks;
 using Momiji.Bot.V3.Serialization.XmlSerializer;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.IO;
+using System.Reflection;
+using System.Collections.Generic;
+using Momiji.Bot.V5.Modules;
 
 namespace Momiji.Bot.V5.Core.Discord
 {
@@ -73,14 +77,41 @@ namespace Momiji.Bot.V5.Core.Discord
 		{
 			if (_connect)
 			{
+				DiscordSocketClient.Ready += DiscordSocketClient_Ready;
 				await DiscordSocketClient.LoginAsync(TokenType.Bot, BotKeyReader.BOT_TOKEN);
 				await DiscordSocketClient.StartAsync();
 				await DiscordSocketClient.SetStatusAsync(UserStatus.Online);
 			}
+			else
+			{
+				LoadModules();
+			}
 		}
+
+		private Task DiscordSocketClient_Ready()
+		{
+			LoadModules();
+
+			return Task.CompletedTask;
+		}
+
 		private async Task Disconnect()
 		{
 			await DiscordSocketClient.LogoutAsync();
+		}
+
+		List<MomijiModuleBase> modules = new List<MomijiModuleBase>();
+		private async Task LoadModules()
+		{
+			await new ModuleLoader().LoadModules();
+			//return Task.CompletedTask;
+		}
+
+		
+
+		internal static void ModuleBase_LogEvent(MomijiModuleBase sender, String message)
+		{
+			InternalServer.Server.Log(sender.ModuleName, message, InternalServer.ConsoleMessageType.Module);
 		}
 	}
 }

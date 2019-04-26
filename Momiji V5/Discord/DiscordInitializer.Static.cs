@@ -26,6 +26,10 @@ namespace Momiji.Bot.V5.Core.Discord
 		{
 			InternalServer.Server.Log("DiscordModule", message, InternalServer.ConsoleMessageType.Heart);
 		}
+		public static void Log(Exception ex)
+		{
+			InternalServer.Server.Log("DiscordModule", ex.ToString(), InternalServer.ConsoleMessageType.Warning);
+		}
 
 		public static Task LogSocket(LogMessage message)
 		{

@@ -212,6 +212,8 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ModuleCompatible.cs" />
+    <Compile Include="ModuleLoader.cs" />
     <Compile Include="Momiji Heart.cs" />
     <Compile Include="MomijiHeartException.cs" />
     <Compile Include="Program.cs" />
