@@ -183,6 +183,12 @@
     <Compile Include="Controls\CircularPictureBox.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Controls\Installer\Welcome Form.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\Installer\Welcome Form.Designer.cs">
+      <DependentUpon>Welcome Form.cs</DependentUpon>
+    </Compile>
     <Compile Include="Discord\DiscordInitializer.cs" />
     <Compile Include="Discord\CommandServiceConfig.cs" />
     <Compile Include="Discord\DiscordConfig.cs" />
@@ -218,6 +224,9 @@
     <Compile Include="MomijiHeartException.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Controls\Installer\Welcome Form.resx">
+      <DependentUpon>Welcome Form.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controls\Panels\ConsolePanel.resx">
       <DependentUpon>ConsolePanel.cs</DependentUpon>
     </EmbeddedResource>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using Momiji.Bot.V5.Core.Controls.Installer;
 
 namespace Momiji.Bot.V5.Core
 {
@@ -16,7 +17,7 @@ namespace Momiji.Bot.V5.Core
 			InternalServer.Server.StartServer(); //Global error logging
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
-			Application.Run(new MainForm());
+			Application.Run(new Welcome_Form());
 		}
 	}
 }
