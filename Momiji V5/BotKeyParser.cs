@@ -36,6 +36,20 @@ namespace Momiji.Bot.V5.Core
 			}
 		}
 
+		internal static bool CheckForKey()
+		{
+			return File.Exists(FILE_PATH);
+		}
+
+		internal static void SaveKey(string botToken)
+		{
+			if (!Directory.GetParent(FILE_PATH).Exists)
+			{
+				Directory.GetParent(FILE_PATH).Create();
+			}
+			File.WriteAllText(FILE_PATH, botToken);
+		}
+
 		internal static void ReadKey()
 		{
 			if (File.Exists(FILE_PATH))
