@@ -143,7 +143,7 @@
 			this.ConsoleButton.Selected = true;
 			this.ConsoleButton.Size = new System.Drawing.Size(144, 50);
 			this.ConsoleButton.TabIndex = 0;
-			this.ConsoleButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ConsoleButton_MouseClick);
+			this.ConsoleButton.ButtonClick += new System.Windows.Forms.MouseEventHandler(this.ConsoleButton_MouseClick);
 			// 
 			// ModulesButton
 			// 
