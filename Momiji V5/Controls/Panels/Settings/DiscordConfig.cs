@@ -27,5 +27,27 @@ namespace Momiji.Bot.V5.Core.Controls.Panels.Settings
 			CommandServiceConfig.SeparatorChar =			service.SeparatorChar;
 			CommandServiceConfig.ThrowOnError =				service.ThrowOnError;
 		}
+
+		public Discord.DiscordConfig GenerateConfig()
+		{
+			Discord.DiscordConfig config = new Discord.DiscordConfig();
+
+			var socket = new Discord.DiscordSocketConfigObj();
+			socket.DefaultRetryMode			= DiscordSocketConfig.DefaultRetryMode;
+			socket.LogSeverity				= DiscordSocketConfig.LogSeverity;
+			socket.MessageCacheSize			= DiscordSocketConfig.MessageCacheSize;
+
+			var service = new Discord.CommandServiceConfigObj();
+			service.CaseSensitiveCommands	= CommandServiceConfig.CaseSensitiveCommands;
+			service.DefaultRunMode			= CommandServiceConfig.DefaultRunMode;
+			service.IgnoreExtraArgs			= CommandServiceConfig.IgnoreExtraArgs;
+			service.LogLevel				= CommandServiceConfig.LogLevel;
+			service.SeparatorChar			= CommandServiceConfig.SeparatorChar;
+			service.ThrowOnError			= CommandServiceConfig.ThrowOnError;
+			
+			config.DiscordSocketConfig = socket;
+			config.CommandServiceConfig = service;
+			return config;
+		}
 	}
 }
