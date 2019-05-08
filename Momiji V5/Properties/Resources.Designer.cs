@@ -81,7 +81,7 @@ namespace Momiji.Bot.V5.Core.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to var httpRequestStatus;
-        ///var timestep = 5000;
+        ///var timestep = 1000;
         ///
         ///function init() {
         ///    &quot;use strict&quot;;
@@ -153,6 +153,16 @@ namespace Momiji.Bot.V5.Core.Properties {
         internal static string ConsoleStyle {
             get {
                 return ResourceManager.GetString("ConsoleStyle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap icons8_key_2_64 {
+            get {
+                object obj = ResourceManager.GetObject("icons8-key-2-64", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
