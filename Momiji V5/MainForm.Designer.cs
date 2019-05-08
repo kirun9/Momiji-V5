@@ -36,6 +36,7 @@
 			this.TabButtons = new System.Windows.Forms.FlowLayoutPanel();
 			this.ConsoleButton = new Momiji.Bot.V5.Core.Controls.TabButton();
 			this.ModulesButton = new Momiji.Bot.V5.Core.Controls.TabButton();
+			this.SettingsButton = new Momiji.Bot.V5.Core.Controls.TabButton();
 			this.MomijiIcon = new Momiji.Bot.V5.Core.Controls.CircularPictureBox();
 			this.MainPanel = new System.Windows.Forms.Panel();
 			this.TopPanel.SuspendLayout();
@@ -124,6 +125,7 @@
 			// 
 			this.TabButtons.Controls.Add(this.ConsoleButton);
 			this.TabButtons.Controls.Add(this.ModulesButton);
+			this.TabButtons.Controls.Add(this.SettingsButton);
 			this.TabButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.TabButtons.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
 			this.TabButtons.Location = new System.Drawing.Point(0, 70);
@@ -153,6 +155,17 @@
 			this.ModulesButton.Size = new System.Drawing.Size(144, 50);
 			this.ModulesButton.TabIndex = 1;
 			this.ModulesButton.ButtonClick += new System.Windows.Forms.MouseEventHandler(this.ModulesButton_MouseClick);
+			// 
+			// SettingsButton
+			// 
+			this.SettingsButton.ButtonText = "Settings";
+			this.SettingsButton.Location = new System.Drawing.Point(3, 115);
+			this.SettingsButton.MarkerColor = System.Drawing.Color.FromArgb(((int)(((byte)(250)))), ((int)(((byte)(97)))), ((int)(((byte)(33)))));
+			this.SettingsButton.Name = "SettingsButton";
+			this.SettingsButton.Selected = false;
+			this.SettingsButton.Size = new System.Drawing.Size(144, 50);
+			this.SettingsButton.TabIndex = 2;
+			this.SettingsButton.ButtonClick += new System.Windows.Forms.MouseEventHandler(this.SettingsButton_MouseClick);
 			// 
 			// MomijiIcon
 			// 
@@ -211,6 +224,7 @@
 		private System.Windows.Forms.Button ExitButton;
 		private Controls.TabButton ConsoleButton;
 		private Controls.TabButton ModulesButton;
+		private Controls.TabButton SettingsButton;
 	}
 }
 

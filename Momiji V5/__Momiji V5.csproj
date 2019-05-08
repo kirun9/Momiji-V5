@@ -97,6 +97,9 @@
     <Reference Include="Discord.Net.WebSocket, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Discord.Net.WebSocket.2.0.1\lib\net46\Discord.Net.WebSocket.dll</HintPath>
     </Reference>
+    <Reference Include="kirun9 WinForms Controls">
+      <HintPath>..\..\..\MyLibs\kirun9 WinForms Controls.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Extensions.DependencyInjection, Version=1.1.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.1.1.1\lib\netstandard1.1\Microsoft.Extensions.DependencyInjection.dll</HintPath>
     </Reference>
@@ -183,6 +186,21 @@
     <Compile Include="Controls\CircularPictureBox.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Controls\Panels\Settings\ConfirmationBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\Panels\Settings\ConfirmationBox.Designer.cs">
+      <DependentUpon>ConfirmationBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Panels\Settings\Settings.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Panels\Settings\Settings.Designer.cs">
+      <DependentUpon>Settings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Panels\Settings\CommandServiceConfig.cs" />
+    <Compile Include="Controls\Panels\Settings\DiscordConfig.cs" />
+    <Compile Include="Controls\Panels\Settings\DiscordSocketConfig.cs" />
     <Compile Include="Discord\DiscordInitializer.cs" />
     <Compile Include="Discord\CommandServiceConfig.cs" />
     <Compile Include="Discord\DiscordConfig.cs" />
@@ -218,6 +236,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Controls\Panels\ConsolePanel.resx">
       <DependentUpon>ConsolePanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Panels\Settings\ConfirmationBox.resx">
+      <DependentUpon>ConfirmationBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Panels\Settings\Settings.resx">
+      <DependentUpon>Settings.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\TabButton.resx">
       <DependentUpon>TabButton.cs</DependentUpon>

@@ -12,7 +12,7 @@ namespace Momiji.Bot.V5.Core.Discord
 	{
 		internal static DiscordInitializer Instance;
 
-		private bool _connect;
+		private static bool _connect;
 
 		internal DiscordSocketConfig DiscordSocketConfig { get; private set; }
 		internal DiscordSocketClient DiscordSocketClient { get; private set; }
@@ -81,6 +81,27 @@ namespace Momiji.Bot.V5.Core.Discord
 		private async Task Disconnect()
 		{
 			await DiscordSocketClient.LogoutAsync();
+		}
+
+		internal static void UpdateConfig(DiscordConfig config, bool restart)
+		{
+			Task task = new Task(async () => {
+				DiscordCfg.Data = config;
+				SerializerConfig.Data = DiscordCfg;
+				XmlSerializer.Save(SerializerConfig);
+				Log("Discord configuration changed.");
+				if (restart)
+				{
+					Log("Restarting discord");
+					await DisconnectDiscord();
+					await InitializeDiscord(_connect);
+				}
+				else
+				{
+					Log("Restarting delayed");
+				}
+			});
+			task.Start();
 		}
 	}
 }

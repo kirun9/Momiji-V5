@@ -1,6 +1,7 @@
 ﻿using CefSharp;
 using CefSharp.WinForms;
 using Momiji.Bot.V5.Core.Controls.Panels;
+using Momiji.Bot.V5.Core.Controls.Panels.Settings;
 using System;
 using System.Drawing;
 using System.Threading;
@@ -85,6 +86,11 @@ namespace Momiji.Bot.V5.Core
 			this.WindowState = FormWindowState.Minimized;
 		}
 
+		internal void ChangeToConsole()
+		{
+			ConsoleButton.PerformClick();
+		}
+
 		private void ConsoleButton_MouseClick(Object sender, MouseEventArgs e)
 		{
 			MainPanel.Controls.Clear();
@@ -103,6 +109,16 @@ namespace Momiji.Bot.V5.Core
 				MomijiHeart.Run();
 			});
 			thread.Start();
+		}
+
+		private void SettingsButton_MouseClick(Object sender, MouseEventArgs e)
+		{
+			Settings settings = new Settings();
+			settings.Top = 3;
+			settings.Left = 3;
+			settings.Show();
+			MainPanel.Controls.Clear();
+			MainPanel.Controls.Add(settings);
 		}
 	}
 }
