@@ -29,6 +29,12 @@ namespace Momiji.Bot.V5.Core.Controls
 			base.OnPaint(e);
 		}
 
+		public void PerformClick()
+		{
+			MouseEventArgs args = new MouseEventArgs(MouseButtons.None, 0, 0, 0, 0);
+			TabButton_MouseClick(this, args);
+		}
+
 		private void TabButton_MouseClick(Object sender, MouseEventArgs e)
 		{
 			var controls = Parent.Controls;
