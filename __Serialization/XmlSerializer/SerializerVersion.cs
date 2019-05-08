@@ -40,6 +40,23 @@ namespace Momiji.Bot.V3.Serialization.XmlSerializer
 			this.Version = version;
 		}
 
+		public override Boolean Equals(Object obj)
+		{
+			var version = obj as XmlSerializerVersion;
+			return version != null &&
+				   Version == version.Version;
+		}
+
+		public override Int32 GetHashCode()
+		{
+			var hashCode = -886940605;
+			hashCode = hashCode * -1521134295 + Build.GetHashCode();
+			hashCode = hashCode * -1521134295 + Major.GetHashCode();
+			hashCode = hashCode * -1521134295 + Minor.GetHashCode();
+			hashCode = hashCode * -1521134295 + Revision.GetHashCode();
+			return hashCode;
+		}
+
 		public override string ToString()
 		{
 			return string.Format("v{0}.{1}.{2}.{3}", Major, Minor, Build, Revision);
