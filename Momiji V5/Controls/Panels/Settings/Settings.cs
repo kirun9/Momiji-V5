@@ -365,6 +365,10 @@ namespace Momiji.Bot.V5.Core.Controls.Panels.Settings
 			var config = newConfig.GenerateConfig();
 			Discord.DiscordInitializer.UpdateConfig(config, r == DialogResult.Yes);
 			box.Dispose();
+			if (ParentForm is MainForm form)
+			{
+				form.ChangeToConsole();
+			}
 		}
 	}
 }

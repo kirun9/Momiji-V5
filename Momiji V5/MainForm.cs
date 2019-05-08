@@ -86,6 +86,11 @@ namespace Momiji.Bot.V5.Core
 			this.WindowState = FormWindowState.Minimized;
 		}
 
+		internal void ChangeToConsole()
+		{
+			ConsoleButton.PerformClick();
+		}
+
 		private void ConsoleButton_MouseClick(Object sender, MouseEventArgs e)
 		{
 			MainPanel.Controls.Clear();
