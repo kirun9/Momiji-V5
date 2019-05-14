@@ -113,5 +113,26 @@ namespace Momiji.Bot.V5.Core.Discord
 		{
 			InternalServer.Server.Log(sender.ModuleName, message, InternalServer.ConsoleMessageType.Module);
 		}
+
+		internal static void UpdateConfig(DiscordConfig config, bool restart)
+		{
+			Task task = new Task(async () => {
+				DiscordCfg.Data = config;
+				SerializerConfig.Data = DiscordCfg;
+				XmlSerializer.Save(SerializerConfig);
+				Log("Discord configuration changed.");
+				if (restart)
+				{
+					Log("Restarting discord");
+					await DisconnectDiscord();
+					await InitializeDiscord(_connect);
+				}
+				else
+				{
+					Log("Restarting delayed");
+				}
+			});
+			task.Start();
+		}
 	}
 }
