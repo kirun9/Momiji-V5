@@ -39,7 +39,10 @@ namespace Momiji.Bot.V5.Core
 			BotKeyReader.ReadKey();
 
 			await Discord.DiscordInitializer.InitializeDiscord(true);
-			
+			await ModuleLoader.LoadModules();
+
+			Server.Log("Momiji Heart", "Initialization process ended", ConsoleMessageType.Module);
+			Server.Log("Momiji Heart", "Have Fun!", ConsoleMessageType.Module);
 			await Task.Delay(-1, cancellationToken.Token);
 		}
 	}

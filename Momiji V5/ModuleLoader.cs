@@ -15,11 +15,14 @@ namespace Momiji.Bot.V5.Core
 
 		private static readonly Guid CallerGuid = Guid.NewGuid();
 
-		public static List<MomijiModuleBase> Modules = new List<MomijiModuleBase>();
+		internal static List<MomijiModuleBase> Modules = new List<MomijiModuleBase>();
 
-
-		public async Task LoadModules()
+		public static async Task LoadModules()
 		{
+			while (!DiscordInitializer.Instance.Initialized)
+			{
+				await Task.Delay(1);
+			}
 			var path = Path.Combine("modules");
 			if (Directory.Exists(path))
 			{
@@ -44,7 +47,7 @@ namespace Momiji.Bot.V5.Core
 							{
 								found++;
 								var moduleBase = assembly.CreateInstance(type.FullName, false, BindingFlags.CreateInstance, null, new object[] { CallerGuid }, System.Globalization.CultureInfo.CurrentCulture, null) as MomijiModuleBase;
-								//moduleBase = assembly.CreateInstance(type.FullName) as MomijiModuleBase;
+								
 								var compatibility = CheckCompatibility(moduleBase);
 								if (compatibility == ModuleCompatible.Match)
 								{
@@ -79,11 +82,40 @@ namespace Momiji.Bot.V5.Core
 					module.LogEvent += DiscordInitializer.ModuleBase_LogEvent;
 				}
 				Log("Found " + found + " module" + GetS(found));
+				if (Modules.Count == 0)
+				{
+					Log("Skiping process of loading modules due to lack of modules!", InternalServer.ConsoleMessageType.Attention);
+					return;
+				}
 				Log("Loading " + Modules.Count + " module" + GetS(Modules.Count));
+				Log("PreInitializing modules");
 				foreach (var module in Modules)
 				{
-					module.Initialize();
+					await module.p_PreInitialize();
+					while (module.InitializationState != InitializationState.PreInitialized)
+					{
+						await Task.Delay(1);
+					}
 				}
+				Log("Initializing modules");
+				foreach (var module in Modules)
+				{
+					await module.p_Initialize();
+					while (module.InitializationState != InitializationState.Initialized)
+					{
+						await Task.Delay(1);
+					}
+				}
+				Log("Postinitializing modules");
+				foreach (var module in Modules)
+				{
+					await module.p_PostInitialize();
+					while (module.InitializationState != InitializationState.Completed)
+					{
+						await Task.Delay(1);
+					}
+				}
+
 			}
 			else
 			{
@@ -91,7 +123,7 @@ namespace Momiji.Bot.V5.Core
 			}
 		}
 
-		public ModuleCompatible CheckCompatibility(MomijiModuleBase module)
+		private static ModuleCompatible CheckCompatibility(MomijiModuleBase module)
 		{
 			if (module.ModuleBase < LastCompatibility)
 			{
@@ -107,7 +139,7 @@ namespace Momiji.Bot.V5.Core
 			}
 		}
 
-		public string GetS(int num)
+		private static string GetS(int num)
 		{
 			if (num == 1)
 			{
@@ -119,7 +151,7 @@ namespace Momiji.Bot.V5.Core
 			}
 		}
 
-		public bool IsSubclassOf(Type type, string name)
+		private static bool IsSubclassOf(Type type, string name)
 		{
 			do
 			{
@@ -132,6 +164,10 @@ namespace Momiji.Bot.V5.Core
 		public static void Log(string message)
 		{
 			InternalServer.Server.Log("Module Manager", message, InternalServer.ConsoleMessageType.Heart);
+		}
+		public static void Log(string message, InternalServer.ConsoleMessageType type)
+		{
+			InternalServer.Server.Log("Module Manager", message, type);
 		}
 		public static void Log(Exception ex)
 		{

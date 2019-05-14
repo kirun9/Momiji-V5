@@ -17,10 +17,13 @@ namespace __TestModule
 		public override string ModuleName { get; } = "Test Module";
 		public override Guid Guid { get; } = Guid.Parse("fd8e0d76-ba55-4d90-9dc6-3daba8cd7292");
 
-		public override void Initialize()
+		public override Task Initialize()
 		{
 			//File.WriteAllText(Path.Combine("modules", "guid.txt"), Guid.ToString());
 			Log("This is " + FullModuleName);
+			return Task.CompletedTask;
 		}
+		public override Task PreInitialize() { return Task.CompletedTask; }
+		public override Task PostInitialize() { return Task.CompletedTask; }
 	}
 }

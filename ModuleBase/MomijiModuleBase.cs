@@ -16,6 +16,7 @@ namespace Momiji.Bot.V5.Modules
 		public Version ModuleBase { get; } = new Version("0.1.0.0");
 		public virtual Version Version { get; } = new Version("1.0.0.0");
 		public string FullModuleName { get { return ModuleName + " " + Version; } }
+		public InitializationState InitializationState { get; internal set; }
 
 		protected MomijiModuleBase()
 		{
@@ -45,7 +46,30 @@ namespace Momiji.Bot.V5.Modules
 			}
 		}
 
-		public abstract void Initialize();
+		public async Task p_PreInitialize()
+		{
+			InitializationState = InitializationState.PreInitializing;
+			await PreInitialize();
+			InitializationState = InitializationState.PreInitialized;
+		}
+		public async Task p_Initialize()
+		{
+			InitializationState = InitializationState.Initializing;
+			await Initialize();
+			InitializationState = InitializationState.Initialized;
+		}
+		public async Task p_PostInitialize()
+		{
+			InitializationState = InitializationState.PostInitializing;
+			await PostInitialize();
+			InitializationState = InitializationState.Completed;
+		}
+
+		public abstract Task PreInitialize();
+
+		public abstract Task Initialize();
+
+		public abstract Task PostInitialize();
 
 		protected void Log(string message)
 		{

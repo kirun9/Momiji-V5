@@ -16,13 +16,14 @@ namespace Momiji.Bot.V5.Core.Discord
 	{
 		internal static DiscordInitializer Instance;
 
-		private bool _connect;
+		private static bool _connect;
 
 		internal DiscordSocketConfig DiscordSocketConfig { get; private set; }
 		internal DiscordSocketClient DiscordSocketClient { get; private set; }
 		internal CommandServiceConfig CommandServiceConfig { get; private set; }
 		internal CommandService CommandService { get; private set; }
 		internal IServiceProvider ServiceProvider { get; private set; }
+		internal bool Initialized = false;
 
 		public static XmlObject<DiscordConfig> DiscordCfg { get; set; } = new XmlObject<DiscordConfig>()
 		{
@@ -84,14 +85,12 @@ namespace Momiji.Bot.V5.Core.Discord
 			}
 			else
 			{
-				LoadModules();
+				await DiscordSocketClient_Ready();
 			}
 		}
-
 		private Task DiscordSocketClient_Ready()
 		{
-			LoadModules();
-
+			Initialized = true;
 			return Task.CompletedTask;
 		}
 
@@ -99,15 +98,6 @@ namespace Momiji.Bot.V5.Core.Discord
 		{
 			await DiscordSocketClient.LogoutAsync();
 		}
-
-		List<MomijiModuleBase> modules = new List<MomijiModuleBase>();
-		private async Task LoadModules()
-		{
-			await new ModuleLoader().LoadModules();
-			//return Task.CompletedTask;
-		}
-
-		
 
 		internal static void ModuleBase_LogEvent(MomijiModuleBase sender, String message)
 		{
