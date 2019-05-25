@@ -77,6 +77,8 @@ namespace Momiji.Bot.V5.Core.InternalServer
 					{
 					
 						var context = listener.GetContext();
+						context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+						context.Response.Headers.Add("Access-Control-Allow-Methods", "GET");
 						string webFilePath = context.Request.Url.AbsolutePath.Substring(1);
 						if (webFilePath.Equals("main.html"))
 						{
@@ -210,7 +212,7 @@ namespace Momiji.Bot.V5.Core.InternalServer
 		{
 			var html = Properties.Resources.ConsoleHeader;
 			html = html.Replace("<link rel=\"stylesheet\" href=\"console/ConsoleStyle.css\" />", $"<style>{Properties.Resources.ConsoleStyle}</style>");
-			html = html.Replace("<script src=\"console/ConsoleScript.js\"></script>", "");
+			html = html.Replace("<script src=\"console/ConsoleScript.js\"></script>", "<script>document.getElementById(\"consoleVersion\").innerHTML += \" offline mode\"</script>");
 			html = html.Replace("<MomijiVersion />", GetType().Assembly.GetName().Version.ToString(4));
 			html = html.Replace("<Date />", "Started " + startDateTime.ToString("MMMM dd, yyyy 'at' HH:mm:ss", EnglishCulture));
 			string[] s = html.Split(new string[]{ "\r\n" }, StringSplitOptions.RemoveEmptyEntries);

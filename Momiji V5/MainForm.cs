@@ -65,7 +65,6 @@ namespace Momiji.Bot.V5.Core
 
 		private async void ExitButton_Click(Object sender, EventArgs e)
 		{
-#warning Temporarily
 			InternalServer.Server.Log("Main Thread", "Closing operation was requested by administrator", InternalServer.ConsoleMessageType.Attention);
 			if (Discord.DiscordInitializer.Instance.DiscordSocketClient.ConnectionState == global::Discord.ConnectionState.Connected ||
 				Discord.DiscordInitializer.Instance.DiscordSocketClient.ConnectionState == global::Discord.ConnectionState.Connecting)
