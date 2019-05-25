@@ -5,9 +5,6 @@ using System.Threading.Tasks;
 using Momiji.Bot.V3.Serialization.XmlSerializer;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.IO;
-using System.Reflection;
-using System.Collections.Generic;
 using Momiji.Bot.V5.Modules;
 
 namespace Momiji.Bot.V5.Core.Discord

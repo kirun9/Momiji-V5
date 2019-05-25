@@ -10,7 +10,7 @@ namespace Momiji.Bot.V5.Core
 {
 	class ModuleLoader
 	{
-		public static readonly Version ActualVersion = new Version("0.1.0.0");
+		public static readonly Version ActualVersion = new Version("0.1.1.0");
 		public static readonly Version LastCompatibility = new Version("0.1.0.0");
 
 		private static readonly Guid CallerGuid = Guid.NewGuid();
@@ -19,107 +19,115 @@ namespace Momiji.Bot.V5.Core
 
 		public static async Task LoadModules()
 		{
-			while (!DiscordInitializer.Instance.Initialized)
+			try
 			{
-				await Task.Delay(1);
-			}
-			var path = Path.Combine("modules");
-			if (Directory.Exists(path))
-			{
-				List<Assembly> assemblies = new List<Assembly>();
-				DirectoryInfo info = new DirectoryInfo(path);
-				var DLLModuleFiles = Directory.GetFiles(info.FullName, "*.dll", SearchOption.AllDirectories);
-
-				foreach (var DLLModuleFile in DLLModuleFiles)
+				while (!DiscordInitializer.Instance.Initialized)
 				{
-					var assembly = Assembly.LoadFile(DLLModuleFile);
-					assemblies.Add(assembly);
+					await Task.Delay(1);
 				}
-				int found = 0;
-				foreach (var assembly in assemblies)
+				var path = Path.Combine("modules");
+				if (Directory.Exists(path))
 				{
-					foreach (var type in assembly.GetExportedTypes())
+					List<Assembly> assemblies = new List<Assembly>();
+					DirectoryInfo info = new DirectoryInfo(path);
+					var DLLModuleFiles = Directory.GetFiles(info.FullName, "*.dll", SearchOption.AllDirectories);
+
+					foreach (var DLLModuleFile in DLLModuleFiles)
 					{
-						if (type.IsSubclassOf(typeof(MomijiModuleBase)))
+						var assembly = Assembly.LoadFile(DLLModuleFile);
+						assemblies.Add(assembly);
+					}
+					int found = 0;
+					foreach (var assembly in assemblies)
+					{
+						foreach (var type in assembly.GetExportedTypes())
 						{
-							AppDomain.CurrentDomain.Load(assembly.GetName()); // Can it be there?
-							try
+							if (type.IsSubclassOf(typeof(MomijiModuleBase)))
 							{
-								found++;
-								var moduleBase = assembly.CreateInstance(type.FullName, false, BindingFlags.CreateInstance, null, new object[] { CallerGuid }, System.Globalization.CultureInfo.CurrentCulture, null) as MomijiModuleBase;
-								
-								var compatibility = CheckCompatibility(moduleBase);
-								if (compatibility == ModuleCompatible.Match)
+								AppDomain.CurrentDomain.Load(assembly.GetName()); // Can it be there?
+								try
 								{
-									Modules.Add(moduleBase);
-								}
-								else
-								{
-									if (compatibility == ModuleCompatible.New)
+									found++;
+									var moduleBase = assembly.CreateInstance(type.FullName, false, BindingFlags.CreateInstance, null, new object[] { CallerGuid }, System.Globalization.CultureInfo.CurrentCulture, null) as MomijiModuleBase;
+
+									var compatibility = CheckCompatibility(moduleBase);
+									if (compatibility == ModuleCompatible.Match)
 									{
-										Log("Module " + moduleBase.FullModuleName + " will not be loaded.\nModule is not supported yet.\nModule is probably designed for newer versions of module loader.");
+										Modules.Add(moduleBase);
 									}
 									else
 									{
-										Log("Module " + moduleBase.FullModuleName + " will not be loaded.\nModule is not longer supported and need be updated.");
+										if (compatibility == ModuleCompatible.New)
+										{
+											Log("Module " + moduleBase.FullModuleName + " will not be loaded.\nModule is not supported yet.\nModule is probably designed for newer versions of module loader.");
+										}
+										else
+										{
+											Log("Module " + moduleBase.FullModuleName + " will not be loaded.\nModule is not longer supported and need be updated.");
+										}
 									}
 								}
+								catch (Exception ex)
+								{
+									Log(ex);
+								}
 							}
-							catch (Exception ex)
+							else if (IsSubclassOf(type, "MomijiBot.ModuleManager.MomijiModuleBase"))
 							{
-								Log(ex);
+								found++;
+								Log("Module of type " + type.FullName + " cannot be loaded because it is designed for previous version of Momiji and is not longer compatible.");
 							}
 						}
-						else if (IsSubclassOf(type, "MomijiBot.ModuleManager.MomijiModuleBase"))
+					}
+					foreach (var module in Modules)
+					{
+						module.LogEvent += DiscordInitializer.ModuleBase_LogEvent;
+					}
+					Log("Found " + found + " module" + GetS(found));
+					if (Modules.Count == 0)
+					{
+						Log("Skiping process of loading modules due to lack of modules!", InternalServer.ConsoleMessageType.Attention);
+						return;
+					}
+					Modules = SortModules(Modules);
+					Log("Loading " + Modules.Count + " module" + GetS(Modules.Count));
+					Log("PreInitializing modules");
+					foreach (var module in Modules)
+					{
+						await module.p_PreInitialize();
+						while (module.InitializationState != InitializationState.PreInitialized)
 						{
-							found++;
-							Log("Module of type " + type.FullName + " cannot be loaded because it is designed for previous version of Momiji and is not longer compatible.");
+							await Task.Delay(1);
 						}
 					}
-				}
-				foreach (var module in Modules)
-				{
-					module.LogEvent += DiscordInitializer.ModuleBase_LogEvent;
-				}
-				Log("Found " + found + " module" + GetS(found));
-				if (Modules.Count == 0)
-				{
-					Log("Skiping process of loading modules due to lack of modules!", InternalServer.ConsoleMessageType.Attention);
-					return;
-				}
-				Log("Loading " + Modules.Count + " module" + GetS(Modules.Count));
-				Log("PreInitializing modules");
-				foreach (var module in Modules)
-				{
-					await module.p_PreInitialize();
-					while (module.InitializationState != InitializationState.PreInitialized)
+					Log("Initializing modules");
+					foreach (var module in Modules)
 					{
-						await Task.Delay(1);
+						await module.p_Initialize();
+						while (module.InitializationState != InitializationState.Initialized)
+						{
+							await Task.Delay(1);
+						}
 					}
-				}
-				Log("Initializing modules");
-				foreach (var module in Modules)
-				{
-					await module.p_Initialize();
-					while (module.InitializationState != InitializationState.Initialized)
+					Log("Postinitializing modules");
+					foreach (var module in Modules)
 					{
-						await Task.Delay(1);
+						await module.p_PostInitialize();
+						while (module.InitializationState != InitializationState.Completed)
+						{
+							await Task.Delay(1);
+						}
 					}
-				}
-				Log("Postinitializing modules");
-				foreach (var module in Modules)
-				{
-					await module.p_PostInitialize();
-					while (module.InitializationState != InitializationState.Completed)
-					{
-						await Task.Delay(1);
-					}
-				}
 
+				}
+				else
+				{
+					Directory.CreateDirectory(path);
+				}
 			}
-			else
+			catch (Exception ex)
 			{
-				Directory.CreateDirectory(path);
+				throw new MomijiHeartException("Caught exception during module initialization. Cannot continue.", ex);
 			}
 		}
 
@@ -159,6 +167,76 @@ namespace Momiji.Bot.V5.Core
 			}
 			while ((type = type.BaseType) != null);
 			return false;
+		}
+
+		private static List<MomijiModuleBase> SortModules(List<MomijiModuleBase> modules)
+		{
+			List<TempModule> Items = Translate(modules);
+			List<TempModule> Sorted = new List<TempModule>();
+
+			while (Items.Count > 0)
+			{
+				for (int i = 0; i < Items.Count; i++)
+				{
+					var item = Items[i];
+					int found = 0;
+					for (int j  = 0; j < item.Parents.Count; j++)
+					{
+						for (int k = 0; k < Sorted.Count; k++)
+						{
+							if (item.Parents[j] == Sorted[k].Guid)
+							{
+								Sorted[k].AddParent(item);
+								found++;
+							}
+						}
+					}
+					if (found == item.Parents.Count)
+					{
+						Sorted.Add(item);
+						Items.Remove(item);
+					}
+				}
+			}
+			if (Sorted.Count != modules.Count)
+				throw new MomijiHeartException("Number of sorted modules is different than unsorted.");
+
+			return Translate(Sorted, modules);
+		}
+
+		private static List<TempModule> Translate(List<MomijiModuleBase> modules)
+		{
+			List<TempModule> temp = new List<TempModule>();
+			foreach (var module in modules)
+			{
+				TempModule m = new TempModule(module.Guid);
+				foreach (var dependOn in module.DependsOn)
+				{
+					m.AddParent(dependOn);
+				}
+				temp.Add(m);
+			}
+			if (temp.Count != modules.Count)
+				throw new MomijiHeartException("Something went wrong during translating unsorted modules. Number of modules does not match.");
+			return temp;
+		}
+
+		private static List<MomijiModuleBase> Translate(List<TempModule> tempModules, List<MomijiModuleBase> modules)
+		{
+			List<MomijiModuleBase> temp = new List<MomijiModuleBase>();
+			foreach (var tempModule in tempModules)
+			{
+				foreach (var module in modules)
+				{
+					if (tempModule.Guid == module.Guid)
+					{
+						temp.Add(module);
+					}
+				}
+			}
+			if (temp.Count != modules.Count)
+				throw new MomijiHeartException("Something went wrong during translating sorted modules. Number of modules does not match.");
+			return temp;
 		}
 
 		public static void Log(string message)

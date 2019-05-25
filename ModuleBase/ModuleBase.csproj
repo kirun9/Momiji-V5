@@ -124,7 +124,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
+    <Compile Include="CommandModuleBase.cs" />
     <Compile Include="InitializationState.cs" />
     <Compile Include="MomijiModuleBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

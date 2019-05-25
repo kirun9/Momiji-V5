@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Momiji.Bot.V5.Modules
@@ -13,9 +9,10 @@ namespace Momiji.Bot.V5.Modules
 		public virtual bool Enabled { get; private set; } = true;
 		public virtual Guid Guid { get; } = Guid.NewGuid();
 		public virtual string ModuleName { get; } = "BlankModule";
-		public Version ModuleBase { get; } = new Version("0.1.0.0");
+		public Version ModuleBase { get; private set; } = new Version("0.1.1.0");
 		public virtual Version Version { get; } = new Version("1.0.0.0");
 		public string FullModuleName { get { return ModuleName + " " + Version; } }
+		public virtual Guid[] DependsOn { get; } = { };
 		public InitializationState InitializationState { get; internal set; }
 
 		protected MomijiModuleBase()
