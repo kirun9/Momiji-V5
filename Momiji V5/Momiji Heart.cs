@@ -22,7 +22,7 @@ namespace Momiji.Bot.V5.Core
 			{
 				Server.Log("Momiji Heart", ex.ToString(), ConsoleMessageType.Error);
 			}
-			catch (OperationCanceledException ex)
+			catch (OperationCanceledException)
 			{
 
 			}
