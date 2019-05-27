@@ -10,7 +10,7 @@ namespace Momiji.Bot.V5.Core
 {
 	class ModuleLoader
 	{
-		public static readonly Version ActualVersion = new Version("0.1.1.0");
+		public static readonly Version ActualVersion = new Version("0.1.2.0");
 		public static readonly Version LastCompatibility = new Version("0.1.0.0");
 
 		private static readonly Guid CallerGuid = Guid.NewGuid();
@@ -178,20 +178,41 @@ namespace Momiji.Bot.V5.Core
 			{
 				for (int i = 0; i < Items.Count; i++)
 				{
-					var item = Items[i];
+					TempModule item = Items[i];
 					int found = 0;
-					for (int j  = 0; j < item.Parents.Count; j++)
+					int found2 = 0;
+					for (int j = 0; j < item.Parents.Count; j++)
 					{
-						for (int k = 0; k < Sorted.Count; k++)
+						if (item.Parents[j] != item.Guid)
 						{
-							if (item.Parents[j] == Sorted[k].Guid)
+							for (int k = 0; k < Items.Count; k++)
 							{
-								Sorted[k].AddParent(item);
-								found++;
+								if (item.Parents[j] == Items[k].Guid)
+								{
+									found++;
+								}
+							}
+							for (int k = 0; k < Sorted.Count; k++)
+							{
+								if (item.Parents[j] == Sorted[k].Guid)
+								{
+									found++;
+									found2++;
+								}
 							}
 						}
+						else
+						{
+							Items.Remove(item);
+							Log("Module cannot have itself as dependecy module!\nModule " + item.Name + " will not be loaded.", InternalServer.ConsoleMessageType.Attention);
+						}
 					}
-					if (found == item.Parents.Count)
+					if (found < item.Parents.Count)
+					{
+						Items.Remove(item);
+						Log("Module " + item.Name + " will not be loaded. Cannot find all modules on which this module depends on!", InternalServer.ConsoleMessageType.Attention);
+					}
+					else if (found2 == item.Parents.Count)
 					{
 						Sorted.Add(item);
 						Items.Remove(item);
@@ -209,7 +230,7 @@ namespace Momiji.Bot.V5.Core
 			List<TempModule> temp = new List<TempModule>();
 			foreach (var module in modules)
 			{
-				TempModule m = new TempModule(module.Guid);
+				TempModule m = new TempModule(module.Guid, module.ModuleName);
 				foreach (var dependOn in module.DependsOn)
 				{
 					m.AddParent(dependOn);

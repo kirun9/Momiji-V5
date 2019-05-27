@@ -6,11 +6,13 @@ namespace Momiji.Bot.V5.Core
 	public class TempModule
 	{
 		public Guid Guid { get; private set; }
+		public string Name { get; private set; }
 		public List<Guid> Parents { get; private set; } = new List<Guid>();
 
-		public TempModule(Guid Guid)
+		public TempModule(Guid Guid, string name)
 		{
 			this.Guid = Guid;
+			this.Name = name;
 		}
 
 		public void AddParent(Guid parent)
