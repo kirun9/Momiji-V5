@@ -1,6 +1,7 @@
 ﻿using CefSharp;
 using CefSharp.WinForms;
 using Momiji.Bot.V5.Core.Controls.Panels;
+using Momiji.Bot.V5.Core.Controls.Panels.Modules;
 using Momiji.Bot.V5.Core.Controls.Panels.Settings;
 using System;
 using System.Drawing;
@@ -98,7 +99,12 @@ namespace Momiji.Bot.V5.Core
 		
 		private void ModulesButton_MouseClick(Object sender, MouseEventArgs e)
 		{
-			
+			ModulePanel panel = new ModulePanel();
+			panel.Top = 3;
+			panel.Left = 3;
+			panel.Show();
+			MainPanel.Controls.Clear();
+			MainPanel.Controls.Add(panel);
 		}
 
 		private void MainForm_Load(Object sedner, EventArgs e)
