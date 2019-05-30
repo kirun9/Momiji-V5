@@ -10,10 +10,11 @@ namespace Momiji.Bot.V5.Core
 {
 	class ModuleLoader
 	{
-		public static readonly Version ActualVersion = new Version("0.1.2.0");
+		public static readonly Version ActualVersion = new Version("0.1.3.0");
 		public static readonly Version LastCompatibility = new Version("0.1.0.0");
 
 		private static readonly Guid CallerGuid = Guid.NewGuid();
+		private static string Key = Security.GetHash(BotKeyReader.BOT_TOKEN);
 
 		internal static List<MomijiModuleBase> Modules = new List<MomijiModuleBase>();
 
@@ -49,7 +50,8 @@ namespace Momiji.Bot.V5.Core
 								{
 									found++;
 									var moduleBase = assembly.CreateInstance(type.FullName, false, BindingFlags.CreateInstance, null, new object[] { CallerGuid }, System.Globalization.CultureInfo.CurrentCulture, null) as MomijiModuleBase;
-
+									moduleBase.SetHash(Security.GetHash(Key + moduleBase.Guid));
+									
 									var compatibility = CheckCompatibility(moduleBase);
 									if (compatibility == ModuleCompatible.Match)
 									{
@@ -94,16 +96,18 @@ namespace Momiji.Bot.V5.Core
 					Log("PreInitializing modules");
 					foreach (var module in Modules)
 					{
-						await module.p_PreInitialize();
+						await module.p_PreInitialize(Key + module.Guid);
 						while (module.InitializationState != InitializationState.PreInitialized)
 						{
 							await Task.Delay(1);
 						}
+						Program.mainForm.AddModule(module);
+						module.ModuleStateEvent += ModuleStateChanged;
 					}
 					Log("Initializing modules");
 					foreach (var module in Modules)
 					{
-						await module.p_Initialize();
+						await module.p_Initialize(Key + module.Guid);
 						while (module.InitializationState != InitializationState.Initialized)
 						{
 							await Task.Delay(1);
@@ -112,7 +116,7 @@ namespace Momiji.Bot.V5.Core
 					Log("Postinitializing modules");
 					foreach (var module in Modules)
 					{
-						await module.p_PostInitialize();
+						await module.p_PostInitialize(Key + module.Guid);
 						while (module.InitializationState != InitializationState.Completed)
 						{
 							await Task.Delay(1);
@@ -128,6 +132,29 @@ namespace Momiji.Bot.V5.Core
 			catch (Exception ex)
 			{
 				throw new MomijiHeartException("Caught exception during module initialization. Cannot continue.", ex);
+			}
+		}
+
+		private static void ModuleStateChanged(MomijiModuleBase sender, ModuleStateChangedArgs args)
+		{
+			foreach (var module in Modules)
+			{
+				int highest = 0;
+				foreach (var guid in module.DependsOn)
+				{
+					if (guid == sender.Guid)
+					{
+						if ((int)sender.ModuleState > highest)
+						{
+							highest = (int)sender.ModuleState;
+						};
+					}
+				}
+				if (module is IRecieveWarningEvents mod)
+				{
+					mod.OnDependModuleWarning(sender.Guid, args);
+				}
+				module.ModuleState = (ModuleState) highest;
 			}
 		}
 
@@ -171,6 +198,10 @@ namespace Momiji.Bot.V5.Core
 
 		private static List<MomijiModuleBase> SortModules(List<MomijiModuleBase> modules)
 		{
+			Log("Please check and eventually fix Sort Module funcion!\n" +
+				"Known things to do:\n" +
+				" • Check for inner self reference (aka cirled reference)\n" +
+				" • Check with more modules (even with names like \"A\", \"B\", \"C\")", InternalServer.ConsoleMessageType.Attention);
 			List<TempModule> Items = Translate(modules);
 			List<TempModule> Sorted = new List<TempModule>();
 

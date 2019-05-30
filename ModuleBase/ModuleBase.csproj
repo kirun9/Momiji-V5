@@ -127,6 +127,7 @@
   <ItemGroup>
     <Compile Include="CommandModuleBase.cs" />
     <Compile Include="ICustomModuleItem.cs" />
+    <Compile Include="IIgnoreOtherModuleWarnings.cs" />
     <Compile Include="InitializationState.cs" />
     <Compile Include="ModuleState.cs" />
     <Compile Include="ModuleStateChangedArgs.cs" />
@@ -136,6 +137,12 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\__Security\__Security.csproj">
+      <Project>{fe1ab331-18ba-4bdb-aa13-311df5510ee9}</Project>
+      <Name>__Security</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -3,6 +3,7 @@ using CefSharp.WinForms;
 using Momiji.Bot.V5.Core.Controls.Panels;
 using Momiji.Bot.V5.Core.Controls.Panels.Modules;
 using Momiji.Bot.V5.Core.Controls.Panels.Settings;
+using Momiji.Bot.V5.Modules;
 using System;
 using System.Drawing;
 using System.Threading;
@@ -13,6 +14,15 @@ namespace Momiji.Bot.V5.Core
 	public partial class MainForm : Form
 	{
 		private ConsolePanel consolePanel;
+		private ModulePanel modulePanel;
+
+		delegate void DAddModule(MomijiModuleBase module);
+		private void PAddModule(MomijiModuleBase module)
+		{
+			modulePanel.AddModule(module);
+			modulePanel.Invalidate();
+		}
+
 		public MainForm()
 		{
 			InitializeComponent();
@@ -26,6 +36,11 @@ namespace Momiji.Bot.V5.Core
 			consolePanel = new ConsolePanel();
 			consolePanel.Top = 3;
 			consolePanel.Left = 3;
+
+			modulePanel = new ModulePanel();
+			modulePanel.Top = 3;
+			modulePanel.Left = 3;
+			modulePanel.Show();
 
 			MainPanel.Controls.Add(consolePanel);
 		}
@@ -99,12 +114,8 @@ namespace Momiji.Bot.V5.Core
 		
 		private void ModulesButton_MouseClick(Object sender, MouseEventArgs e)
 		{
-			ModulePanel panel = new ModulePanel();
-			panel.Top = 3;
-			panel.Left = 3;
-			panel.Show();
 			MainPanel.Controls.Clear();
-			MainPanel.Controls.Add(panel);
+			MainPanel.Controls.Add(modulePanel);
 		}
 
 		private void MainForm_Load(Object sedner, EventArgs e)
@@ -124,6 +135,11 @@ namespace Momiji.Bot.V5.Core
 			settings.Show();
 			MainPanel.Controls.Clear();
 			MainPanel.Controls.Add(settings);
+		}
+
+		internal void AddModule(MomijiModuleBase module)
+		{
+			Invoke(new DAddModule(PAddModule), module);
 		}
 	}
 }

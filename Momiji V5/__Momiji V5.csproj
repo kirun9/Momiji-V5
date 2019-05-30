@@ -342,6 +342,10 @@
       <Project>{02dcd630-a521-46e5-986a-c11c6fcdf984}</Project>
       <Name>ModuleBase</Name>
     </ProjectReference>
+    <ProjectReference Include="..\__Security\__Security.csproj">
+      <Project>{fe1ab331-18ba-4bdb-aa13-311df5510ee9}</Project>
+      <Name>__Security</Name>
+    </ProjectReference>
     <ProjectReference Include="..\__Serialization\__Serialization.csproj">
       <Project>{9DDDA85E-AA3B-4D3F-8708-913AE6454288}</Project>
       <Name>__Serialization</Name>

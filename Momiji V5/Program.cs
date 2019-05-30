@@ -7,6 +7,7 @@ namespace Momiji.Bot.V5.Core
 	static class Program
 	{
 		public static readonly bool ENABLE_FILE_LOGGING = true;
+		public static MainForm mainForm;
 		private static ApplicationContext applicationContext;
 		/// <summary>
 		/// The main entry point for the application.
@@ -25,7 +26,7 @@ namespace Momiji.Bot.V5.Core
 			}
 			else
 			{
-				applicationContext = new ApplicationContext(new MainForm());
+				applicationContext = new ApplicationContext(mainForm = new MainForm());
 			}
 
 			Application.Run(applicationContext);
@@ -38,6 +39,10 @@ namespace Momiji.Bot.V5.Core
 			applicationContext.MainForm = form;
 			tForm.Close();
 			applicationContext.MainForm.Show();
+			if (form is MainForm)
+			{
+				mainForm = form as MainForm;
+			}
 		}
 	}
 }

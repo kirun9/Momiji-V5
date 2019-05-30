@@ -12,7 +12,7 @@ namespace __TestModule
 	{
 		public Class1(Guid callerGuid) : base(callerGuid) { }
 
-		public Class1() { }
+		public Class1() : base() { }
 
 		public override string ModuleName { get; } = "Test Module";
 		public override Guid Guid { get; } = Guid.Parse("fd8e0d76-ba55-4d90-9dc6-3daba8cd7292");

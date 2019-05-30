@@ -6,6 +6,7 @@ namespace Momiji.Bot.V5.Core.Controls.Panels.Modules
 {
 	public partial class ModuleItem : UserControl
 	{
+		private MomijiModuleBase module;
 		private delegate void DSetText(string text, Color color);
 		internal void PSetModuleStatusText(string text, Color color)
 		{
@@ -17,6 +18,13 @@ namespace Momiji.Bot.V5.Core.Controls.Panels.Modules
 		public ModuleItem()
 		{
 			InitializeComponent();
+		}
+
+		public ModuleItem(MomijiModuleBase module)
+		{
+			InitializeComponent();
+			this.module = module;
+			ModuleNameLabel.Text = module.ModuleName;
 		}
 
 		internal void UpdateModuleState(ModuleState state)
