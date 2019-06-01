@@ -25,7 +25,7 @@ namespace Momiji.Bot.V5.Core.Discord
 			Data = new DiscordConfig(),
 			Version = new XmlSerializerVersion("v1.0.0.0")
 		};
-		public static XmlSerializerConfig<XmlObject<DiscordConfig>> SerializerConfig { get; set; } = new XmlSerializerConfig<XmlObject<DiscordConfig>>()
+		public static XmlSerializerConfig<DiscordConfig> SerializerConfig { get; set; } = new XmlSerializerConfig<DiscordConfig>()
 		{
 			Data = DiscordCfg,
 			Directory = "configs",
