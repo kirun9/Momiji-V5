@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 using Momiji.Bot.V5.Modules;
 
@@ -7,11 +8,12 @@ namespace Momiji.Bot.V5.Core.Controls.Panels.Modules
 	public partial class ModuleItem : UserControl
 	{
 		private MomijiModuleBase module;
-		private delegate void DSetText(string text, Color color);
-		internal void PSetModuleStatusText(string text, Color color)
+		private delegate void DModuleState(ModuleState state);
+		internal void PSetModuleState(ModuleState state)
 		{
-			ModuleStatusLabel.ForeColor = color;
-			ModuleStatusLabel.Text = text;
+			var tuple = ParseModuleState(state);
+			ModuleStatusLabel.Text = tuple.Item1;
+			ModuleStatusLabel.ForeColor = tuple.Item2;
 			Invalidate();
 		}
 
@@ -25,31 +27,43 @@ namespace Momiji.Bot.V5.Core.Controls.Panels.Modules
 			InitializeComponent();
 			this.module = module;
 			ModuleNameLabel.Text = module.ModuleName;
+			module.ModuleStateEvent += OnModuleStateChanged;
+			SetModuleState(module.ModuleState);
 		}
 
-		internal void UpdateModuleState(ModuleState state)
+		internal void SetModuleState(ModuleState state)
+		{
+			if (InvokeRequired)
+				Invoke(new DModuleState(PSetModuleState), state);
+			else
+				PSetModuleState(state);
+		}
+
+		private void OnModuleStateChanged(MomijiModuleBase sender, ModuleStateChangedArgs args) => SetModuleState(args.NewState);
+
+		private Tuple<string, Color> ParseModuleState(ModuleState state)
 		{
 			switch (state)
 			{
 				case ModuleState.Disabled:
 				{
-					Invoke(new DSetText(PSetModuleStatusText), "Disabled", Color.Black);
-					break;
+					return Tuple.Create("Disabled", Color.Black);
 				}
 				case ModuleState.Enabled:
 				{
-					Invoke(new DSetText(PSetModuleStatusText), "Enabled", Color.DarkGreen);
-					break;
+					return Tuple.Create("Enabled", Color.DarkGreen);
 				}
 				case ModuleState.Error:
 				{
-					Invoke(new DSetText(PSetModuleStatusText), "Error", Color.DarkRed);
-					break;
+					return Tuple.Create("Error", Color.DarkRed);
 				}
 				case ModuleState.Warning:
 				{
-					Invoke(new DSetText(PSetModuleStatusText), "Warning", Color.Yellow);
-					break;
+					return Tuple.Create("Warning", Color.Yellow);
+				}
+				default:
+				{
+					return Tuple.Create(Single.NaN + "", Color.White);
 				}
 			}
 		}

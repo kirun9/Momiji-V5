@@ -139,7 +139,10 @@ namespace Momiji.Bot.V5.Core
 
 		internal void AddModule(MomijiModuleBase module)
 		{
-			Invoke(new DAddModule(PAddModule), module);
+			if (InvokeRequired)
+				Invoke(new DAddModule(PAddModule), module);
+			else
+				PAddModule(module);
 		}
 	}
 }
