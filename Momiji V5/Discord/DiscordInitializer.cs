@@ -29,7 +29,6 @@ namespace Momiji.Bot.V5.Core.Discord
 		};
 		public static XmlSerializerConfig<DiscordConfig> SerializerConfig { get; set; } = new XmlSerializerConfig<DiscordConfig>()
 		{
-			Data = DiscordCfg,
 			Directory = "configs",
 			FileName = "DiscordConfig.xml"
 		};
@@ -105,8 +104,7 @@ namespace Momiji.Bot.V5.Core.Discord
 		{
 			Task task = new Task(async () => {
 				DiscordCfg.Data = config;
-				SerializerConfig.Data = DiscordCfg;
-				XmlSerializer.Save(SerializerConfig);
+				XmlSerializer.Save(SerializerConfig, DiscordCfg);
 				Log("Discord configuration changed.");
 				if (restart)
 				{
