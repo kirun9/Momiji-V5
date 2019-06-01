@@ -7,7 +7,7 @@ namespace Momiji.Bot.V3.Serialization.XmlSerializer
 {
 	public class XmlSerializer
 	{
-		public static XmlObject<T> Load<T>(XmlSerializerConfig<XmlObject<T>> config)
+		public static XmlObject<T> Load<T>(XmlSerializerConfig<T> config)
 		{
 			string path = config.FilePath;
 			if (!File.Exists(path))
@@ -54,7 +54,7 @@ namespace Momiji.Bot.V3.Serialization.XmlSerializer
 			return obj;
 		}
 
-		public static void Save<T>(XmlSerializerConfig<XmlObject<T>> config)
+		public static void Save<T>(XmlSerializerConfig<T> config)
 		{
 			string path = config.FilePath;
 			if (!File.Exists(path))
@@ -156,7 +156,7 @@ namespace Momiji.Bot.V3.Serialization.XmlSerializer
 			}
 		}
 
-		public static XmlObject<T> Reload<T>(XmlSerializerConfig<XmlObject<T>> config)
+		public static XmlObject<T> Reload<T>(XmlSerializerConfig<T> config)
 		{
 			try
 			{
@@ -171,7 +171,7 @@ namespace Momiji.Bot.V3.Serialization.XmlSerializer
 			}
 		}
 
-		public static XmlObject<T> ReSave<T>(XmlSerializerConfig<XmlObject<T>> config)
+		public static XmlObject<T> ReSave<T>(XmlSerializerConfig<T> config)
 		{
 			try
 			{
