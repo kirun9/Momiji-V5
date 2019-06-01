@@ -7,7 +7,7 @@ namespace Momiji.Bot.V3.Serialization.XmlSerializer
 		public const string MainDir = "{BASE}";
 		public string Directory { get; set; }
 		public string FileName { get; set; }
-		public T Data { get; set; }
+		public XmlObject<T> Data { get; set; }
 		public string FilePath { get => GetPath(); }
 		private string GetPath()
 		{
