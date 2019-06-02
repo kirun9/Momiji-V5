@@ -1,14 +1,12 @@
 ﻿using Momiji.Bot.V5.Modules;
+using Momiji.Bot.V5.Modules.Interface;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace __TestModule
 {
-	public class Class1 : MomijiModuleBase
+	public class Class1 : MomijiModuleBase, ICustomToolStrip
 	{
 		public Class1(Guid callerGuid) : base(callerGuid) { }
 
@@ -25,5 +23,33 @@ namespace __TestModule
 		}
 		public override Task PreInitialize() { return Task.CompletedTask; }
 		public override Task PostInitialize() { return Task.CompletedTask; }
+
+		public Task LoadConfig()
+		{
+
+			return Task.CompletedTask;
+		}
+		public Task SaveConfig()
+		{
+
+			return Task.CompletedTask;
+		}
+		public string ConfigPath()
+		{
+			return @"C:\Users\Krystian\Desktop\Empty file.txt";
+		}
+
+		public ToolStripMenuItem GetCustomMenuItem()
+		{
+			ToolStripMenuItem item = new ToolStripMenuItem()
+			{
+				Name = "item",
+				Text = "CustomItem",
+				BackColor = System.Drawing.Color.Black,
+				ForeColor = System.Drawing.Color.Aqua,
+				DisplayStyle = ToolStripItemDisplayStyle.Text
+			};
+			return item;
+		}
 	}
 }

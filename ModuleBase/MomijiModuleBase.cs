@@ -6,6 +6,10 @@ namespace Momiji.Bot.V5.Modules
 	public abstract class MomijiModuleBase : MarshalByRefObject
 	{
 		private ModuleState _moduleState = ModuleState.Enabled;
+		/// <summary>
+		/// Version on which module base this module was created for
+		/// </summary>
+		public Version ModuleBase { get; private set; } = new Version("0.1.5.0");
 		private string Hash { get; set; } = "";
 		/// <summary>
 		/// Guid of main program. It must always be the same as Main program Guid
@@ -23,10 +27,6 @@ namespace Momiji.Bot.V5.Modules
 		/// User set module name
 		/// </summary>
 		public virtual string ModuleName { get; } = "BlankModule";
-		/// <summary>
-		/// Version on which module base this module was created for
-		/// </summary>
-		public Version ModuleBase { get; private set; } = new Version("0.1.3.0");
 		/// <summary>
 		/// Version of module
 		/// </summary>

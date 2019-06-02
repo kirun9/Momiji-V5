@@ -1,6 +1,6 @@
 ﻿using System.Windows.Forms;
 
-namespace Momiji.Bot.V5.Modules
+namespace Momiji.Bot.V5.Modules.Interface
 {
 	public interface ICustomModuleItem
 	{

@@ -33,6 +33,8 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -48,6 +50,10 @@
     <ProjectReference Include="..\ModuleBase\ModuleBase.csproj">
       <Project>{02DCD630-A521-46E5-986A-C11C6FCDF984}</Project>
       <Name>ModuleBase</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\__Serialization\__Serialization.csproj">
+      <Project>{9DDDA85E-AA3B-4D3F-8708-913AE6454288}</Project>
+      <Name>__Serialization</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

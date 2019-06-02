@@ -126,8 +126,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommandModuleBase.cs" />
-    <Compile Include="ICustomModuleItem.cs" />
-    <Compile Include="IIgnoreOtherModuleWarnings.cs" />
+    <Compile Include="Interface\IConfig.cs" />
+    <Compile Include="Interface\ICustomModuleItem.cs" />
+    <Compile Include="Interface\ICustomToolStrip.cs" />
+    <Compile Include="Interface\IIgnoreOtherModuleWarnings.cs" />
     <Compile Include="InitializationState.cs" />
     <Compile Include="ModuleState.cs" />
     <Compile Include="ModuleStateChangedArgs.cs" />
@@ -142,6 +144,10 @@
     <ProjectReference Include="..\__Security\__Security.csproj">
       <Project>{fe1ab331-18ba-4bdb-aa13-311df5510ee9}</Project>
       <Name>__Security</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\__Serialization\__Serialization.csproj">
+      <Project>{9DDDA85E-AA3B-4D3F-8708-913AE6454288}</Project>
+      <Name>__Serialization</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

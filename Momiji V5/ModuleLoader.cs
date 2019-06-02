@@ -5,13 +5,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
+using Momiji.Bot.V5.Modules.Interface;
 
 namespace Momiji.Bot.V5.Core
 {
 	class ModuleLoader
 	{
-		public static readonly Version ActualVersion = new Version("0.1.3.0");
-		public static readonly Version LastCompatibility = new Version("0.1.0.0");
+		public static readonly Version ActualVersion = new Version("0.1.5.0");
+		public static readonly Version LastCompatibility = new Version("0.1.5.0");
 
 		private static readonly Guid CallerGuid = Guid.NewGuid();
 		private static string Key = Security.GetHash(BotKeyReader.BOT_TOKEN);
@@ -93,6 +94,14 @@ namespace Momiji.Bot.V5.Core
 					}
 					Modules = SortModules(Modules);
 					Log("Loading " + Modules.Count + " module" + GetS(Modules.Count));
+					Log("Loading configs");
+					foreach (var module in Modules)
+					{
+						if (module is IConfig configModule)
+						{
+							await configModule.LoadConfig();
+						}
+					}
 					Log("PreInitializing modules");
 					foreach (var module in Modules)
 					{
@@ -103,6 +112,14 @@ namespace Momiji.Bot.V5.Core
 						}
 						Program.mainForm.AddModule(module);
 						module.ModuleStateEvent += ModuleStateChanged;
+					}
+					Log("Loading Modules resources");
+					foreach (var module in Modules)
+					{
+						if (module is IExternalResources resources)
+						{
+							await resources.LoadResources();
+						}
 					}
 					Log("Initializing modules");
 					foreach (var module in Modules)
