@@ -16,6 +16,7 @@ namespace Momiji.Bot.V5.Core.Controls.Panels.Modules
 			var tuple = ParseModuleState(state);
 			ModuleStatusLabel.Text = tuple.Item1;
 			ModuleStatusLabel.ForeColor = tuple.Item2;
+			PSetMenuStripAction(state);
 			Invalidate();
 		}
 		internal void PSetMenuStripAction(ModuleState state)
@@ -24,6 +25,11 @@ namespace Momiji.Bot.V5.Core.Controls.Panels.Modules
 			{
 				enableToolStripMenuItem.Text = "Disable";
 			}
+			else if (state.HasFlag(ModuleState.DisableModule))
+			{
+				enableToolStripMenuItem.Text = "Enable";
+			}
+			Invalidate();
 		}
 
 		public ModuleItem()
@@ -37,6 +43,7 @@ namespace Momiji.Bot.V5.Core.Controls.Panels.Modules
 			this.module = module;
 			ModuleNameLabel.Text = module.ModuleName;
 			module.ModuleStateEvent += OnModuleStateChanged;
+			PSetMenuStripAction(module.ModuleState);
 			SetModuleState(module.ModuleState);
 
 			if (module is IConfig configModule)
@@ -160,7 +167,7 @@ namespace Momiji.Bot.V5.Core.Controls.Panels.Modules
 
 		private void OnModuleStateChanged(MomijiModuleBase sender, ModuleStateChangedArgs args) => SetModuleState(args.NewState);
 
-		private Tuple<string, Color> ParseModuleState(ModuleState state)
+		private Tuple<string, Color> ParseModuleState(ModuleState state) // ModuleStateFlags wszędzie?
 		{
 			switch (state)
 			{
@@ -200,7 +207,16 @@ namespace Momiji.Bot.V5.Core.Controls.Panels.Modules
 
 		private void enableToolStripMenuItem_Click(Object sender, EventArgs e)
 		{
-			
+			if (module.ModuleState == ModuleState.Enabled || module.ModuleState == ModuleState.Error || module.ModuleState == ModuleState.Warning)
+			{
+				module.ModuleState = ModuleState.Disabled;
+				ModuleLoader.DisableModule(module);
+			}
+			else if (module.ModuleState == ModuleState.Disabled)
+			{
+				module.ModuleState = ModuleState.Enabled;
+				ModuleLoader.EnableModule(module);
+			}
 		}
 	}
 }

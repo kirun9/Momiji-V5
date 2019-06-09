@@ -199,6 +199,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BotKeyParser.cs" />
+    <Compile Include="Config\Config.cs" />
+    <Compile Include="Config\ConfigCommand.cs" />
+    <Compile Include="Config\ConfigModule.cs" />
+    <Compile Include="Config\ConfigRoot.cs" />
     <Compile Include="Controls\CircularPictureBox.cs">
       <SubType>Component</SubType>
     </Compile>
