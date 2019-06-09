@@ -91,6 +91,7 @@ namespace Momiji.Bot.V5.Core
 			InternalServer.Server.Log("Main Thread", "Closing operation completed", InternalServer.ConsoleMessageType.Attention);
 			InternalServer.Server.ShutdownServer();
 			Cef.Shutdown();
+			await Config.Settings.SaveConfig();
 			MomijiHeart.Stop();
 			Environment.ExitCode = 0;
 			Application.Exit();

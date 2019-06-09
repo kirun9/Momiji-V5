@@ -127,8 +127,10 @@
   <ItemGroup>
     <Compile Include="CommandModuleBase.cs" />
     <Compile Include="Interface\IConfig.cs" />
+    <Compile Include="Interface\ICustomDisable.cs" />
     <Compile Include="Interface\ICustomModuleItem.cs" />
     <Compile Include="Interface\ICustomToolStrip.cs" />
+    <Compile Include="Interface\IExternalResources.cs" />
     <Compile Include="Interface\IIgnoreOtherModuleWarnings.cs" />
     <Compile Include="InitializationState.cs" />
     <Compile Include="ModuleState.cs" />

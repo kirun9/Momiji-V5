@@ -8,13 +8,4 @@ namespace Momiji.Bot.V5.Modules.Interface
 		Task SaveConfig();
 		string ConfigPath();
 	}
-
-	public interface IExternalResources
-	{
-		Task LoadResources();
-		Task SaveResources();
-		Task ReloadResources();
-		Task ResaveResources();
-		string ResourcePath();
-	}
 }

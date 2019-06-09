@@ -18,7 +18,7 @@ namespace Momiji.Bot.V5.Modules
 		/// <summary>
 		/// Indendicates if module is enabled and actions can be performed on it
 		/// </summary>
-		public virtual bool Enabled { get; private set; } = true;
+		public virtual bool Enabled { get { return !_moduleState.HasFlag(ModuleState.DisableModule); } }
 		/// <summary>
 		/// Guid of this module. This Guid is indentifing module acros whole program. It is used for example in module searching
 		/// </summary>
@@ -162,12 +162,14 @@ namespace Momiji.Bot.V5.Modules
 
 		private void OnModuleStateChanged(ModuleState newState, ModuleState oldState)
 		{
-			ModuleStateEvent?.Invoke(this, new ModuleStateChangedArgs(newState, oldState));
+			if (newState != oldState)
+				ModuleStateEvent?.Invoke(this, new ModuleStateChangedArgs(newState, oldState));
 		}
 
 		public event LogEventHandler LogEvent;
 		public event ModuleStateHandler ModuleStateEvent;
 		public delegate void LogEventHandler(MomijiModuleBase sender, string message);
 		public delegate void ModuleStateHandler(MomijiModuleBase sender, ModuleStateChangedArgs args);
+
 	}
 }

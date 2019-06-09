@@ -1,4 +1,5 @@
 ﻿using Momiji.Bot.V5.Core.InternalServer;
+using Momiji.Bot.V5.Core.Config;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,6 +8,8 @@ namespace Momiji.Bot.V5.Core
 {
 	public class MomijiHeart
 	{
+		private const bool ConnectToDiscord = false;
+
 		private static CancellationTokenSource cancellationToken = new CancellationTokenSource();
 		public static void Stop()
 		{
@@ -29,7 +32,7 @@ namespace Momiji.Bot.V5.Core
 			catch (Exception ex)
 			{
 				Server.Log("Momiji Heart", ex.ToString(), ConsoleMessageType.Error);
-				Run();
+				//Run();
 			}
 		}
 
@@ -38,7 +41,8 @@ namespace Momiji.Bot.V5.Core
 			Server.Log("Momiji Heart", "Initialization process started", ConsoleMessageType.Module);
 			BotKeyReader.ReadKey();
 
-			await Discord.DiscordInitializer.InitializeDiscord(true);
+			await Discord.DiscordInitializer.InitializeDiscord(ConnectToDiscord);
+			await Settings.ReadSettings();
 			await ModuleLoader.LoadModules();
 
 			Server.Log("Momiji Heart", "Initialization process ended", ConsoleMessageType.Module);
