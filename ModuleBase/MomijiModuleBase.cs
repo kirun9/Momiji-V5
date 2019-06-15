@@ -5,6 +5,8 @@ namespace Momiji.Bot.V5.Modules
 {
 	public abstract class MomijiModuleBase : MarshalByRefObject
 	{
+		public static MomijiModuleBase Instance { get; set; }
+
 		private ModuleState _moduleState = ModuleState.Enabled;
 		/// <summary>
 		/// Version on which module base this module was created for
@@ -84,6 +86,7 @@ namespace Momiji.Bot.V5.Modules
 			if (CallerGuid == Guid.Empty)
 			{
 				CallerGuid = callerGuid;
+				Instance = this;
 			}
 			else
 			{

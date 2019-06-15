@@ -1,4 +1,5 @@
-﻿using Momiji.Bot.V5.Modules;
+﻿using Discord.Commands;
+using Momiji.Bot.V5.Modules;
 using Momiji.Bot.V5.Modules.Interface;
 using System;
 using System.Threading.Tasks;
@@ -6,7 +7,7 @@ using System.Windows.Forms;
 
 namespace __TestModule
 {
-	public class Class1 : MomijiModuleBase, ICustomToolStrip
+	public class Class1 : MomijiModuleBase, ICustomToolStrip, ICommandModule
 	{
 		public Class1(Guid callerGuid) : base(callerGuid) { }
 
@@ -50,6 +51,28 @@ namespace __TestModule
 				DisplayStyle = ToolStripItemDisplayStyle.Text
 			};
 			return item;
+		}
+
+		public Type GetCommandClass()
+		{
+			return typeof(Commands);
+		}
+
+		public async Task RegisterCommands(CommandService service, IServiceProvider provider)
+		{
+			var moduleInfo = await service.AddModuleAsync(typeof(Commands), provider);
+			Log(moduleInfo.ToString());
+		}
+	}
+
+	public class Commands : CommandBase<Class1>
+	{
+		public Commands() { }
+
+		[Command("Test")]
+		public async Task TestCommand()
+		{
+			await Context.Channel.SendMessageAsync("This is test command send from \"" + ModuleBase.ModuleName + "\" module.");
 		}
 	}
 }

@@ -7,8 +7,13 @@ using Discord.Commands;
 
 namespace Momiji.Bot.V5.Modules
 {
-    public class CommandModuleBase : ModuleBase<SocketCommandContext>
-    {
-		
-    }
+    public class CommandBase<U> : ModuleBase<SocketCommandContext> where U : MomijiModuleBase
+	{
+		public U ModuleBase { get; set; }
+		protected override void BeforeExecute(CommandInfo command)
+		{
+			base.BeforeExecute(command);
+			ModuleBase = (U) MomijiModuleBase.Instance;
+		}
+	}
 }

@@ -191,7 +191,7 @@ namespace Momiji.Bot.V5.Core.InternalServer
 
 		public static void Log(LogMessage message) => Instance.Append(message);
 		public static void Log(string moduleName, string message, ConsoleMessageType messageType = ConsoleMessageType.Info) => Instance.Append(DateTime.Now, moduleName, message, messageType);
-
+		public static void Log(string moduleName, string message, Exception exception, ConsoleMessageType messageType = ConsoleMessageType.Warning) => Instance.Append(DateTime.Now, moduleName, message + " " + exception.ToString(), messageType);
 		public static void StartServer() => Instance.Start();
 
 		public static void StopServer() => Instance.Stop();

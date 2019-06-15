@@ -8,7 +8,7 @@ namespace Momiji.Bot.V5.Core
 {
 	public class MomijiHeart
 	{
-		private const bool ConnectToDiscord = false;
+		private const bool ConnectToDiscord = true;
 
 		private static CancellationTokenSource cancellationToken = new CancellationTokenSource();
 		public static void Stop()

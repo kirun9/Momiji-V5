@@ -78,11 +78,11 @@ namespace Momiji.Bot.V5.Core
 									Log(ex);
 								}
 							}
-							else if (IsSubclassOf(type, "MomijiBot.ModuleManager.MomijiModuleBase"))
+							/*else if (IsSubclassOf(type, "MomijiBot.ModuleManager.MomijiModuleBase"))
 							{
 								found++;
 								Log("Module of type " + type.FullName + " cannot be loaded because it is designed for previous version of Momiji and is not longer compatible.");
-							}
+							}*/
 						}
 					} 
 
@@ -210,6 +210,17 @@ namespace Momiji.Bot.V5.Core
 							{
 								await Task.Delay(1);
 							}
+						}
+					}
+					var CommandModules = Modules.Where((m) => { return m is ICommandModule; }).ToList();
+					if (CommandModules.Count > 0)
+					{
+						Log("Adding Commands");
+						foreach (var module in CommandModules)
+						{
+							//await DiscordInitializer.Instance.AddCommands(module.GetType());
+							var commandModule = module as ICommandModule;
+							await commandModule.RegisterCommands(DiscordInitializer.Instance.CommandService, DiscordInitializer.Instance.ServiceProvider);
 						}
 					}
 				}

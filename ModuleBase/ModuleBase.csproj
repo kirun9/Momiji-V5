@@ -126,6 +126,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommandModuleBase.cs" />
+    <Compile Include="Interface\ICommandModule.cs" />
     <Compile Include="Interface\IConfig.cs" />
     <Compile Include="Interface\ICustomDisable.cs" />
     <Compile Include="Interface\ICustomModuleItem.cs" />
