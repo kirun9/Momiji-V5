@@ -23,9 +23,9 @@ namespace Momiji.Bot.V5.Core.InternalServer
 		public override string ToString()
 		{
 			var colors = ParseColors(MessageType);
-			Message = Message.Trim();
-			Message = Message.PreventInjection();
-			Message = Message.Replace("\n", "<br />\n");
+			var m = Message.Trim();
+			m = Message.PreventInjection();
+			m = Message.Replace("\n", "<br />\n");
 			string output = "";
 			if (MessageType == ConsoleMessageType.Warning || MessageType == ConsoleMessageType.Error)
 			{
@@ -53,6 +53,12 @@ namespace Momiji.Bot.V5.Core.InternalServer
 					return Tuple.Create("", "", "");
 				case ConsoleMessageType.Module:
 					return Tuple.Create("", "module", "module");
+				case ConsoleMessageType.Heart:
+					return Tuple.Create("", "", "module");
+				case ConsoleMessageType.Discord:
+					return Tuple.Create("", "discord", "discord");
+				case ConsoleMessageType.Attention:
+					return Tuple.Create("warning", "warning", "warning");
 				default:
 					return Tuple.Create("warning", "warning", "warning");
 			}

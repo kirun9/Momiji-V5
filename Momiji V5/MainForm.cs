@@ -1,7 +1,11 @@
-﻿using System;
-using System.Drawing;
-using System.Windows.Forms;
+﻿using CefSharp;
+using CefSharp.WinForms;
 using Momiji.Bot.V5.Core.Controls.Panels;
+using Momiji.Bot.V5.Core.Controls.Panels.Settings;
+using System;
+using System.Drawing;
+using System.Threading;
+using System.Windows.Forms;
 
 namespace Momiji.Bot.V5.Core
 {
@@ -16,13 +20,11 @@ namespace Momiji.Bot.V5.Core
 #else
 			this.WindowState = FormWindowStete.Maximized;
 #endif
-			InternalServer.Server server = new InternalServer.Server();
-			server.Start();
+			Cef.Initialize(new CefSettings());
 
 			consolePanel = new ConsolePanel();
 			consolePanel.Top = 3;
 			consolePanel.Left = 3;
-
 
 			MainPanel.Controls.Add(consolePanel);
 		}
@@ -61,11 +63,21 @@ namespace Momiji.Bot.V5.Core
 		}
 		#endregion
 
-		private void ExitButton_Click(Object sender, EventArgs e)
+		private async void ExitButton_Click(Object sender, EventArgs e)
 		{
-#warning Temporarily
+			InternalServer.Server.Log("Main Thread", "Closing operation was requested by administrator", InternalServer.ConsoleMessageType.Attention);
+			if (Discord.DiscordInitializer.Instance.DiscordSocketClient.ConnectionState == global::Discord.ConnectionState.Connected ||
+				Discord.DiscordInitializer.Instance.DiscordSocketClient.ConnectionState == global::Discord.ConnectionState.Connecting)
+			{
+				await Discord.DiscordInitializer.DisconnectDiscord();
+				
+			}
+			InternalServer.Server.Log("Main Thread", "Closing operation completed", InternalServer.ConsoleMessageType.Attention);
+			InternalServer.Server.ShutdownServer();
+			Cef.Shutdown();
+			MomijiHeart.Stop();
+			Environment.ExitCode = 0;
 			Application.Exit();
-			Environment.Exit(0);
 		}
 
 		private void MinimizeButton_Click(Object sender, EventArgs e)
@@ -73,16 +85,39 @@ namespace Momiji.Bot.V5.Core
 			this.WindowState = FormWindowState.Minimized;
 		}
 
+		internal void ChangeToConsole()
+		{
+			ConsoleButton.PerformClick();
+		}
+
 		private void ConsoleButton_MouseClick(Object sender, MouseEventArgs e)
 		{
 			MainPanel.Controls.Clear();
 			MainPanel.Controls.Add(consolePanel);
 		}
-
+		
 		private void ModulesButton_MouseClick(Object sender, MouseEventArgs e)
 		{
-			InternalServer.Server.Log("15:59:00", "Test module", "Hello!");
-			System.Diagnostics.Debug.WriteLine("Clicked");
+			
+		}
+
+		private void MainForm_Load(Object sedner, EventArgs e)
+		{
+			Thread thread = new Thread(t =>
+			{
+				MomijiHeart.Run();
+			});
+			thread.Start();
+		}
+
+		private void SettingsButton_MouseClick(Object sender, MouseEventArgs e)
+		{
+			Settings settings = new Settings();
+			settings.Top = 3;
+			settings.Left = 3;
+			settings.Show();
+			MainPanel.Controls.Clear();
+			MainPanel.Controls.Add(settings);
 		}
 	}
 }

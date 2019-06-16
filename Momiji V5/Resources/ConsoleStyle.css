@@ -7,6 +7,10 @@
     table-layout: fixed;
 }
 
+.inline {
+    display: inline;
+}
+
 div.logo {
     font: 12pt Unifont;
     color: yellow;
@@ -62,4 +66,8 @@ div.logo {
 
 abbr {
     text-decoration: none;
+}
+
+.discord {
+    color: blueviolet;
 }
