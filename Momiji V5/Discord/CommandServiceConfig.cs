@@ -16,5 +16,9 @@ namespace Momiji.Bot.V5.Core.Discord
 		public char SeparatorChar { get; set; } = ' ';
 		[XmlElement]
 		public bool ThrowOnError { get; set; } = true;
+		[XmlElement]
+		public string CommandPrefix { get; set; } = "!";
+		[XmlElement]
+		public bool ReactOnMention { get; set; } = false;
 	}
 }

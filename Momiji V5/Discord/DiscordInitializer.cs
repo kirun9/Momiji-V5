@@ -5,10 +5,12 @@ using System.Threading.Tasks;
 using Momiji.Bot.V3.Serialization.XmlSerializer;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using Momiji.Bot.V5.Modules;
+using System.Reflection;
 
 namespace Momiji.Bot.V5.Core.Discord
 {
-	public partial class DiscordInitializer
+	public partial class DiscordInitializer : MarshalByRefObject
 	{
 		internal static DiscordInitializer Instance;
 
@@ -18,16 +20,18 @@ namespace Momiji.Bot.V5.Core.Discord
 		internal DiscordSocketClient DiscordSocketClient { get; private set; }
 		internal CommandServiceConfig CommandServiceConfig { get; private set; }
 		internal CommandService CommandService { get; private set; }
-		internal IServiceProvider ServiceProvider { get; private set; }
+		[Obsolete]
+		public IServiceProvider ServiceProvider { get; set; }
+		internal IServiceCollection ServiceCollection { get; set; }
+		internal bool Initialized = false;
 
 		public static XmlObject<DiscordConfig> DiscordCfg { get; set; } = new XmlObject<DiscordConfig>()
 		{
 			Data = new DiscordConfig(),
 			Version = new XmlSerializerVersion("v1.0.0.0")
 		};
-		public static XmlSerializerConfig<XmlObject<DiscordConfig>> SerializerConfig { get; set; } = new XmlSerializerConfig<XmlObject<DiscordConfig>>()
+		public static XmlSerializerConfig<DiscordConfig> SerializerConfig { get; set; } = new XmlSerializerConfig<DiscordConfig>()
 		{
-			Data = DiscordCfg,
 			Directory = "configs",
 			FileName = "DiscordConfig.xml"
 		};
@@ -63,32 +67,102 @@ namespace Momiji.Bot.V5.Core.Discord
 			CommandService = new CommandService(CommandServiceConfig);
 			CommandService.Log += LogCommands;
 
-			ServiceProvider = new ServiceCollection()
+			ServiceCollection = new ServiceCollection()
 				.AddSingleton(DiscordSocketClient)
 				.AddSingleton(CommandService)
-				.BuildServiceProvider();
+				.AddSingleton(InternalServer.Server.Instance);
 		}
 
 		private async Task Connect()
 		{
 			if (_connect)
 			{
+				DiscordSocketClient.Ready += DiscordSocketClient_Ready;
 				await DiscordSocketClient.LoginAsync(TokenType.Bot, BotKeyReader.BOT_TOKEN);
 				await DiscordSocketClient.StartAsync();
 				await DiscordSocketClient.SetStatusAsync(UserStatus.Online);
+				DiscordSocketClient.MessageReceived += DiscordSocketClient_MessageReceived;
 			}
+			else
+			{
+				await DiscordSocketClient_Ready();
+			}
+			await CommandService.AddModulesAsync(Assembly.GetEntryAssembly(), ServiceCollection.BuildServiceProvider());
 		}
+
+		private async Task DiscordSocketClient_MessageReceived(SocketMessage arg)
+		{
+			
+			var message = arg as SocketUserMessage;
+			int argPos = 0;
+			if (message is null || message.Content == null)
+			{
+				return;
+			}
+			if (message.HasStringPrefix(DiscordCfg.Data.CommandServiceConfig.CommandPrefix, ref argPos) || (DiscordCfg.Data.CommandServiceConfig.ReactOnMention && message.HasMentionPrefix(DiscordSocketClient.CurrentUser, ref argPos)))
+			{
+				var context = new SocketCommandContext(DiscordSocketClient, message);
+				Log(context.User, $"{message.Content} - sent from: {(context.IsPrivate ? "DM channel" : $"{context.Guild.Name} from #{context.Channel.Name}")} channel");
+				try
+				{
+					var result = await CommandService.ExecuteAsync(context, argPos, ServiceCollection.BuildServiceProvider());
+					if (!result.IsSuccess)
+					{
+						if (result is ExecuteResult executeResult)
+						{
+
+						}
+					}
+				}
+				catch (Exception ex)
+				{
+					Log(context.User, $"Exception in {ex.TargetSite.DeclaringType.FullName} inside {ex.TargetSite.DeclaringType.Assembly.GetName().Name}:" +
+						$"\n{this.GetType().FullName}: {ex.Message}\nCommand: {message.Content}\nBy:      {context.User.Username}\nChannel: {context.Channel.Name}\n\n", ex, InternalServer.ConsoleMessageType.Warning);
+					await context.Channel.SendMessageAsync("Sorry. I couldn't handle that.\nPlease ask <@332164161129938944> for help. :worried:");
+				}
+			}
+			
+		}
+
+		private Task DiscordSocketClient_Ready()
+		{
+			Initialized = true;
+			return Task.CompletedTask;
+		}
+
+		[Obsolete]
+		internal async Task AddCommands(Type t)
+		{
+			await CommandService.AddModuleAsync(t, ServiceCollection.BuildServiceProvider());
+		}
+
+		[Obsolete]
+		internal async Task AddCommands(Assembly assembly)
+		{
+			await CommandService.AddModulesAsync(assembly, ServiceCollection.BuildServiceProvider());
+		}
+
+		internal async Task AddCommands(MomijiModuleBase moduleBase, Type type)
+		{
+			ServiceCollection.AddSingleton(moduleBase.GetType(), moduleBase);
+			await CommandService.AddModuleAsync(type, ServiceCollection.BuildServiceProvider());
+		}
+
 		private async Task Disconnect()
 		{
 			await DiscordSocketClient.LogoutAsync();
+		}
+
+		internal static void ModuleBase_LogEvent(MomijiModuleBase sender, String message)
+		{
+			InternalServer.Server.Log(sender.ModuleName, message, InternalServer.ConsoleMessageType.Module);
 		}
 
 		internal static void UpdateConfig(DiscordConfig config, bool restart)
 		{
 			Task task = new Task(async () => {
 				DiscordCfg.Data = config;
-				SerializerConfig.Data = DiscordCfg;
-				XmlSerializer.Save(SerializerConfig);
+				XmlSerializer.Save(SerializerConfig, DiscordCfg);
 				Log("Discord configuration changed.");
 				if (restart)
 				{
