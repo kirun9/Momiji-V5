@@ -64,6 +64,10 @@ div.logo {
     color: orange;
 }
 
+abbr {
+    text-decoration: none;
+}
+
 .discord {
     color: blueviolet;
 }
