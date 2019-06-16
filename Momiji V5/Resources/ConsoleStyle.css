@@ -59,3 +59,7 @@ div.logo {
 .module {
     color: orange;
 }
+
+abbr {
+    text-decoration: none;
+}
