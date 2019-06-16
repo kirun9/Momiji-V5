@@ -9,6 +9,8 @@ namespace Momiji.Bot.V5.Core.InternalServer
 {
 	internal class Server : IConsole
 	{
+		private readonly ushort Port = 12369; 
+
 		private static int MaxLogs { get; } = 100;
 		private DateTime startDateTime;
 		private static Server _instance;
@@ -40,7 +42,15 @@ namespace Momiji.Bot.V5.Core.InternalServer
 		public Server()
 		{
 			listener = new HttpListener();
-			listener.Prefixes.Add("http://localhost:12369/");
+			var host = Dns.GetHostEntry(Dns.GetHostName());
+			foreach (var ip in host.AddressList)
+			{
+				if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+				{
+					listener.Prefixes.Add($"http://{ip.ToString()}:{Port}/");
+				}
+			}
+			listener.Prefixes.Add($"http://localhost:{Port}/");
 			startDateTime = DateTime.Now;
 			#region FileLogger
 			if (Program.ENABLE_FILE_LOGGING)
@@ -75,7 +85,6 @@ namespace Momiji.Bot.V5.Core.InternalServer
 				{
 					while (listener.IsListening)
 					{
-					
 						var context = listener.GetContext();
 						context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
 						context.Response.Headers.Add("Access-Control-Allow-Methods", "GET");
