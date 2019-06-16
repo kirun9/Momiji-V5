@@ -22,7 +22,6 @@ namespace Momiji.Bot.V5.Core.Discord
 		internal CommandService CommandService { get; private set; }
 		[Obsolete]
 		public IServiceProvider ServiceProvider { get; set; }
-		internal IServiceCollection ServiceCollection { get; set; }
 		internal bool Initialized = false;
 
 		public static XmlObject<DiscordConfig> DiscordCfg { get; set; } = new XmlObject<DiscordConfig>()
@@ -67,10 +66,8 @@ namespace Momiji.Bot.V5.Core.Discord
 			CommandService = new CommandService(CommandServiceConfig);
 			CommandService.Log += LogCommands;
 
-			ServiceCollection = new ServiceCollection()
-				.AddSingleton(DiscordSocketClient)
-				.AddSingleton(CommandService)
-				.AddSingleton(InternalServer.Server.Instance);
+			MomijiHeart.ServiceCollection.AddSingleton(DiscordSocketClient)
+				.AddSingleton(CommandService);
 		}
 
 		private async Task Connect()
@@ -87,12 +84,11 @@ namespace Momiji.Bot.V5.Core.Discord
 			{
 				await DiscordSocketClient_Ready();
 			}
-			await CommandService.AddModulesAsync(Assembly.GetEntryAssembly(), ServiceCollection.BuildServiceProvider());
+			await CommandService.AddModulesAsync(Assembly.GetEntryAssembly(), MomijiHeart.ServiceProvider);
 		}
 
 		private async Task DiscordSocketClient_MessageReceived(SocketMessage arg)
 		{
-			
 			var message = arg as SocketUserMessage;
 			int argPos = 0;
 			if (message is null || message.Content == null)
@@ -105,7 +101,7 @@ namespace Momiji.Bot.V5.Core.Discord
 				Log(context.User, $"{message.Content} - sent from: {(context.IsPrivate ? "DM channel" : $"{context.Guild.Name} from #{context.Channel.Name}")} channel");
 				try
 				{
-					var result = await CommandService.ExecuteAsync(context, argPos, ServiceCollection.BuildServiceProvider());
+					var result = await CommandService.ExecuteAsync(context, argPos, MomijiHeart.ServiceProvider);
 					if (!result.IsSuccess)
 					{
 						if (result is ExecuteResult executeResult)
@@ -121,7 +117,7 @@ namespace Momiji.Bot.V5.Core.Discord
 					await context.Channel.SendMessageAsync("Sorry. I couldn't handle that.\nPlease ask <@332164161129938944> for help. :worried:");
 				}
 			}
-			
+
 		}
 
 		private Task DiscordSocketClient_Ready()
@@ -130,22 +126,27 @@ namespace Momiji.Bot.V5.Core.Discord
 			return Task.CompletedTask;
 		}
 
-		[Obsolete]
-		internal async Task AddCommands(Type t)
-		{
-			await CommandService.AddModuleAsync(t, ServiceCollection.BuildServiceProvider());
-		}
-
-		[Obsolete]
-		internal async Task AddCommands(Assembly assembly)
-		{
-			await CommandService.AddModulesAsync(assembly, ServiceCollection.BuildServiceProvider());
-		}
-
 		internal async Task AddCommands(MomijiModuleBase moduleBase, Type type)
 		{
-			ServiceCollection.AddSingleton(moduleBase.GetType(), moduleBase);
-			await CommandService.AddModuleAsync(type, ServiceCollection.BuildServiceProvider());
+			MomijiHeart.ServiceCollection.AddSingleton(moduleBase.GetType(), moduleBase);
+			await CommandService.AddModuleAsync(type, MomijiHeart.ServiceProvider);
+		}
+
+		internal async Task RemoveCommand(MomijiModuleBase moduleBase, Type type)
+		{
+			for (int i = 0; i < MomijiHeart.ServiceCollection.Count; i++)
+			{
+				if (MomijiHeart.ServiceCollection[i].ServiceType == moduleBase.GetType())
+				{
+					MomijiHeart.ServiceCollection.RemoveAt(i);
+					var t = await CommandService.RemoveModuleAsync(type);
+					if (t)
+						return;
+					else
+						throw new InvalidOperationException("CommandBase of type '" + type + "' was not found in Command Service");
+				}
+			}
+			throw new InvalidOperationException("ModuleBase of type '" + moduleBase.GetType() + "' was not found in Service Collection");
 		}
 
 		private async Task Disconnect()
@@ -155,7 +156,7 @@ namespace Momiji.Bot.V5.Core.Discord
 
 		internal static void ModuleBase_LogEvent(MomijiModuleBase sender, String message)
 		{
-			InternalServer.Server.Log(sender.ModuleName, message, InternalServer.ConsoleMessageType.Module);
+			Console.Log(sender.ModuleName, message, InternalServer.ConsoleMessageType.Module);
 		}
 
 		internal static void UpdateConfig(DiscordConfig config, bool restart)

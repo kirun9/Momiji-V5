@@ -1,12 +1,12 @@
-﻿using System;
+﻿using Momiji.Bot.V5.Core.InternalServer;
+using System;
 using System.Threading.Tasks;
 
 namespace Momiji.Bot.V5.Modules
 {
 	public abstract class MomijiModuleBase
 	{
-		public static MomijiModuleBase Instance { get; set; }
-
+		private IConsole Console { get; set; }
 		private ModuleState _moduleState = ModuleState.Enabled;
 		/// <summary>
 		/// Version on which module base this module was created for
@@ -81,12 +81,12 @@ namespace Momiji.Bot.V5.Modules
 		/// MomijiModuleBase constructor. This one should be called instead of default.
 		/// </summary>
 		/// <param name="callerGuid">guid of caller</param>
-		protected MomijiModuleBase(Guid callerGuid)
+		protected MomijiModuleBase(Guid callerGuid, IConsole console)
 		{
 			if (CallerGuid == Guid.Empty)
 			{
 				CallerGuid = callerGuid;
-				Instance = this;
+				Console = console;
 			}
 			else
 			{
@@ -154,13 +154,15 @@ namespace Momiji.Bot.V5.Modules
 		{
 			
 		}
+
 		/// <summary>
 		/// Logs message into console
 		/// </summary>
 		/// <param name="message">message to log</param>
 		protected void Log(string message)
 		{
-			LogEvent?.Invoke(this, message);
+			//LogEvent?.Invoke(this, message);
+			Console.Append(ModuleName, message, ConsoleMessageType.Module);
 		}
 
 		private void OnModuleStateChanged(ModuleState newState, ModuleState oldState)
@@ -169,6 +171,7 @@ namespace Momiji.Bot.V5.Modules
 				ModuleStateEvent?.Invoke(this, new ModuleStateChangedArgs(newState, oldState));
 		}
 
+		[Obsolete]
 		public event LogEventHandler LogEvent;
 		public event ModuleStateHandler ModuleStateEvent;
 		public delegate void LogEventHandler(MomijiModuleBase sender, string message);

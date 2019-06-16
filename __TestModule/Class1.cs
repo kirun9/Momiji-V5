@@ -1,4 +1,5 @@
 ﻿using Discord.Commands;
+using Momiji.Bot.V5.Core.InternalServer;
 using Momiji.Bot.V5.Modules;
 using Momiji.Bot.V5.Modules.Interface;
 using System;
@@ -9,7 +10,7 @@ namespace __TestModule
 {
 	public class Class1 : MomijiModuleBase, ICustomToolStrip, ICommandModule
 	{
-		public Class1(Guid callerGuid) : base(callerGuid) { }
+		public Class1(Guid callerGuid, IConsole console) : base(callerGuid, console) { }
 
 		public Class1() : base() { }
 

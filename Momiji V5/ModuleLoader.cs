@@ -53,7 +53,7 @@ namespace Momiji.Bot.V5.Core
 								try
 								{
 									found++;
-									var moduleBase = assembly.CreateInstance(type.FullName, false, BindingFlags.CreateInstance, null, new object[] { CallerGuid }, System.Globalization.CultureInfo.CurrentCulture, null) as MomijiModuleBase;
+									var moduleBase = assembly.CreateInstance(type.FullName, false, BindingFlags.CreateInstance, null, new object[] { CallerGuid, MomijiHeart.GetServer }, System.Globalization.CultureInfo.CurrentCulture, null) as MomijiModuleBase;
 									moduleBase.SetHash(Security.GetHash(Key + moduleBase.Guid));
 									
 									var compatibility = CheckCompatibility(moduleBase);
@@ -477,15 +477,15 @@ namespace Momiji.Bot.V5.Core
 
 		public static void Log(string message)
 		{
-			InternalServer.Server.Log("Module Manager", message, InternalServer.ConsoleMessageType.Heart);
+			Console.Log("Module Manager", message, InternalServer.ConsoleMessageType.Heart);
 		}
 		public static void Log(string message, InternalServer.ConsoleMessageType type)
 		{
-			InternalServer.Server.Log("Module Manager", message, type);
+			Console.Log("Module Manager", message, type);
 		}
 		public static void Log(Exception ex)
 		{
-			InternalServer.Server.Log("Module Manager", ex.ToString(), InternalServer.ConsoleMessageType.Warning);
+			Console.Log("Module Manager", ex.ToString(), InternalServer.ConsoleMessageType.Warning);
 		}
 	}
 }

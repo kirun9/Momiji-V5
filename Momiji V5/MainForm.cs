@@ -81,14 +81,14 @@ namespace Momiji.Bot.V5.Core
 
 		private async void ExitButton_Click(Object sender, EventArgs e)
 		{
-			InternalServer.Server.Log("Main Thread", "Closing operation was requested by administrator", InternalServer.ConsoleMessageType.Attention);
+			Console.Log("Main Thread", "Closing operation was requested by administrator", InternalServer.ConsoleMessageType.Attention);
 			if (Discord.DiscordInitializer.Instance.DiscordSocketClient.ConnectionState == global::Discord.ConnectionState.Connected ||
 				Discord.DiscordInitializer.Instance.DiscordSocketClient.ConnectionState == global::Discord.ConnectionState.Connecting)
 			{
 				await Discord.DiscordInitializer.DisconnectDiscord();
 				
 			}
-			InternalServer.Server.Log("Main Thread", "Closing operation completed", InternalServer.ConsoleMessageType.Attention);
+			Console.Log("Main Thread", "Closing operation completed", InternalServer.ConsoleMessageType.Attention);
 			InternalServer.Server.ShutdownServer();
 			Cef.Shutdown();
 			await Config.Settings.SaveConfig();

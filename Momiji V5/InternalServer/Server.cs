@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace Momiji.Bot.V5.Core.InternalServer
 {
-	internal class Server
+	internal class Server : IConsole
 	{
 		private static int MaxLogs { get; } = 100;
 		private DateTime startDateTime;
@@ -122,7 +122,7 @@ namespace Momiji.Bot.V5.Core.InternalServer
 				}
 				catch (HttpListenerException ex)
 				{
-					Log("Logger", ex.ToString(), ConsoleMessageType.Error);
+					Append(new LogMessage(DateTime.Now, "Logger", ex.ToString(), ConsoleMessageType.Error));
 					Start();
 				}
 			});
@@ -147,7 +147,13 @@ namespace Momiji.Bot.V5.Core.InternalServer
 			listener.Close();
 		}
 
-		public void Append(LogMessage message)
+
+		public void Append(string moduleName, string message, ConsoleMessageType type)
+		{
+			Append(new LogMessage(DateTime.Now, moduleName, message, type));
+		}
+
+		internal void Append(LogMessage message)
 		{
 			if (logMessages.Length >= MaxLogs)
 			{
@@ -175,23 +181,7 @@ namespace Momiji.Bot.V5.Core.InternalServer
 				streamWriter.WriteLine(message.ToString());
 			}
 		}
-		private void Append(string date, string moduleName, string message, ConsoleMessageType messageType = ConsoleMessageType.Info)
-		{
-			LogMessage logMessage = new LogMessage(date, moduleName, message, messageType);
-			Append(logMessage);
-		}
 
-		private void Append(DateTime time, string moduleName, string message, ConsoleMessageType messageType = ConsoleMessageType.Info)
-		{
-			LogMessage logMessage = new LogMessage(time.ToString("HH:mm:ss"), moduleName, message, messageType);
-			Append(logMessage);
-		}
-
-		public static void Log(string date, string moduleName, string message, ConsoleMessageType messageType = ConsoleMessageType.Info) => Instance.Append(date, moduleName, message, messageType);
-
-		public static void Log(LogMessage message) => Instance.Append(message);
-		public static void Log(string moduleName, string message, ConsoleMessageType messageType = ConsoleMessageType.Info) => Instance.Append(DateTime.Now, moduleName, message, messageType);
-		public static void Log(string moduleName, string message, Exception exception, ConsoleMessageType messageType = ConsoleMessageType.Warning) => Instance.Append(DateTime.Now, moduleName, message + " " + exception.ToString(), messageType);
 		public static void StartServer() => Instance.Start();
 
 		public static void StopServer() => Instance.Stop();

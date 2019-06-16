@@ -202,7 +202,7 @@ namespace Momiji.Bot.V5.Core.Controls.Panels.Modules
 		private void Log(Exception ex) => Log(ex.ToString(), InternalServer.ConsoleMessageType.Warning);
 		private void Log(string message, InternalServer.ConsoleMessageType consoleMessageType = InternalServer.ConsoleMessageType.Info)
 		{
-			InternalServer.Server.Log("Module List", message, consoleMessageType);
+			Console.Log("Module List", message, consoleMessageType);
 		}
 
 		private void enableToolStripMenuItem_Click(Object sender, EventArgs e)
