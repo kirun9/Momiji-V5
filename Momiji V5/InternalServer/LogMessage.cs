@@ -12,7 +12,7 @@ namespace Momiji.Bot.V5.Core.InternalServer
 		public string Date { get; private set; }
 		public string ModuleName { get; private set; }
 		public ConsoleMessageType MessageType { get; private set; }
-		public LogMessage(string date, string moduleName, string message, ConsoleMessageType messageType = ConsoleMessageType.Info)
+		internal LogMessage(string date, string moduleName, string message, ConsoleMessageType messageType = ConsoleMessageType.Info)
 		{
 			Message = message;
 			Date = date;
@@ -23,9 +23,9 @@ namespace Momiji.Bot.V5.Core.InternalServer
 		public override string ToString()
 		{
 			var colors = ParseColors(MessageType);
-			var m = Message.Trim();
-			m = Message.PreventInjection();
-			m = Message.Replace("\n", "<br />\n");
+			var m = Message?.Trim() ?? "";
+			m = m.PreventInjection();
+			m = m.Replace("\n", "<br />\n");
 			string output = "";
 			if (MessageType == ConsoleMessageType.Warning || MessageType == ConsoleMessageType.Error)
 			{
@@ -63,5 +63,6 @@ namespace Momiji.Bot.V5.Core.InternalServer
 					return Tuple.Create("warning", "warning", "warning");
 			}
 		}
+		
 	}
 }

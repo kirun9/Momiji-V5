@@ -218,9 +218,9 @@ namespace Momiji.Bot.V5.Core
 						Log("Adding Commands");
 						foreach (var module in CommandModules)
 						{
-							//await DiscordInitializer.Instance.AddCommands(module.GetType());
-							var commandModule = module as ICommandModule;
-							await commandModule.RegisterCommands(DiscordInitializer.Instance.CommandService, DiscordInitializer.Instance.ServiceProvider);
+							await DiscordInitializer.Instance.AddCommands(module, ((ICommandModule)module).GetCommandClass());
+							//var commandModule = module as ICommandModule;
+							//await commandModule.RegisterCommands(DiscordInitializer.Instance.CommandService, DiscordInitializer.Instance.ServiceProvider);
 						}
 					}
 				}

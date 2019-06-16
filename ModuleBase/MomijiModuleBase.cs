@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Momiji.Bot.V5.Modules
 {
-	public abstract class MomijiModuleBase : MarshalByRefObject
+	public abstract class MomijiModuleBase
 	{
 		public static MomijiModuleBase Instance { get; set; }
 

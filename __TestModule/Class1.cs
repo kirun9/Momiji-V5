@@ -65,14 +65,14 @@ namespace __TestModule
 		}
 	}
 
-	public class Commands : CommandBase<Class1>
+	public class Commands : CommandBase
 	{
-		public Commands() { }
+		public Class1 ModuleBase { get; set; }
 
 		[Command("Test")]
 		public async Task TestCommand()
 		{
-			await Context.Channel.SendMessageAsync("This is test command send from \"" + ModuleBase.ModuleName + "\" module.");
+			await Context.Channel.SendMessageAsync("This is test command send from \"" + ModuleBase.ModuleName ?? "Unknown" + "\" module.");
 		}
 	}
 }

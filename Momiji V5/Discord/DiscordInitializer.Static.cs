@@ -62,13 +62,13 @@ namespace Momiji.Bot.V5.Core.Discord
 
 		public static Task LogSocket(LogMessage message)
 		{
-			InternalServer.Server.Log(message.Source, message.Message, InternalServer.ConsoleMessageType.Discord);
+			InternalServer.Server.Log(message.Source, message.Message ?? message.Exception.ToString(), InternalServer.ConsoleMessageType.Discord);
 			return Task.CompletedTask;
 		}
 
 		public static Task LogCommands(LogMessage message)
 		{
-			InternalServer.Server.Log(message.Source, message.Message, InternalServer.ConsoleMessageType.User);
+			InternalServer.Server.Log(message.Source, message.Message ?? message.Exception.ToString(), InternalServer.ConsoleMessageType.User);
 			return Task.CompletedTask;
 		}
 	}

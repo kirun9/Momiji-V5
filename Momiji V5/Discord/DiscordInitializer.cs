@@ -20,7 +20,9 @@ namespace Momiji.Bot.V5.Core.Discord
 		internal DiscordSocketClient DiscordSocketClient { get; private set; }
 		internal CommandServiceConfig CommandServiceConfig { get; private set; }
 		internal CommandService CommandService { get; private set; }
+		[Obsolete]
 		public IServiceProvider ServiceProvider { get; set; }
+		internal IServiceCollection ServiceCollection { get; set; }
 		internal bool Initialized = false;
 
 		public static XmlObject<DiscordConfig> DiscordCfg { get; set; } = new XmlObject<DiscordConfig>()
@@ -65,10 +67,10 @@ namespace Momiji.Bot.V5.Core.Discord
 			CommandService = new CommandService(CommandServiceConfig);
 			CommandService.Log += LogCommands;
 
-			ServiceProvider = new ServiceCollection()
+			ServiceCollection = new ServiceCollection()
 				.AddSingleton(DiscordSocketClient)
 				.AddSingleton(CommandService)
-				.BuildServiceProvider();
+				.AddSingleton(InternalServer.Server.Instance);
 		}
 
 		private async Task Connect()
@@ -85,7 +87,7 @@ namespace Momiji.Bot.V5.Core.Discord
 			{
 				await DiscordSocketClient_Ready();
 			}
-			await CommandService.AddModulesAsync(Assembly.GetEntryAssembly(), ServiceProvider);
+			await CommandService.AddModulesAsync(Assembly.GetEntryAssembly(), ServiceCollection.BuildServiceProvider());
 		}
 
 		private async Task DiscordSocketClient_MessageReceived(SocketMessage arg)
@@ -100,15 +102,15 @@ namespace Momiji.Bot.V5.Core.Discord
 			if (message.HasStringPrefix(DiscordCfg.Data.CommandServiceConfig.CommandPrefix, ref argPos) || (DiscordCfg.Data.CommandServiceConfig.ReactOnMention && message.HasMentionPrefix(DiscordSocketClient.CurrentUser, ref argPos)))
 			{
 				var context = new SocketCommandContext(DiscordSocketClient, message);
-				Log(context.User, $"{message.Content} - sent from: {(context.IsPrivate ? "DM channel" : $"{context.Guild.Name} - {context.Channel.Name}")}");
+				Log(context.User, $"{message.Content} - sent from: {(context.IsPrivate ? "DM channel" : $"{context.Guild.Name} from #{context.Channel.Name}")} channel");
 				try
 				{
-					var result = await CommandService.ExecuteAsync(context, argPos, ServiceProvider);
+					var result = await CommandService.ExecuteAsync(context, argPos, ServiceCollection.BuildServiceProvider());
 					if (!result.IsSuccess)
 					{
 						if (result is ExecuteResult executeResult)
 						{
-							
+
 						}
 					}
 				}
@@ -128,16 +130,23 @@ namespace Momiji.Bot.V5.Core.Discord
 			return Task.CompletedTask;
 		}
 
+		[Obsolete]
 		internal async Task AddCommands(Type t)
 		{
-			await CommandService.AddModuleAsync(t, ServiceProvider);
+			await CommandService.AddModuleAsync(t, ServiceCollection.BuildServiceProvider());
 		}
 
+		[Obsolete]
 		internal async Task AddCommands(Assembly assembly)
 		{
-			await CommandService.AddModulesAsync(assembly, ServiceProvider);
+			await CommandService.AddModulesAsync(assembly, ServiceCollection.BuildServiceProvider());
 		}
 
+		internal async Task AddCommands(MomijiModuleBase moduleBase, Type type)
+		{
+			ServiceCollection.AddSingleton(moduleBase.GetType(), moduleBase);
+			await CommandService.AddModuleAsync(type, ServiceCollection.BuildServiceProvider());
+		}
 
 		private async Task Disconnect()
 		{

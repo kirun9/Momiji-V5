@@ -28,8 +28,6 @@ namespace Momiji.Bot.V5.Core.Controls.Panels.Modules
 				control = new ModuleItem(module);
 			}
 			control.Dock = DockStyle.Top;
-			// TODO Module dropdown menu ?
-			// TODO Custom dropdown menu ?
 			Modules.Add(control);
 			label1.Text = "Module List (" + Modules.Count + " module" + (Modules.Count == 1 ? "" : "s") + ")";
 			flowLayoutPanel1.Controls.Add(control);

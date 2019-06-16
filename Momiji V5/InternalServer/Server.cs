@@ -18,7 +18,7 @@ namespace Momiji.Bot.V5.Core.InternalServer
 		private string filePath;
 		private StreamWriter streamWriter;
 
-		private static Server Instance
+		internal static Server Instance
 		{
 			get
 			{
@@ -175,13 +175,13 @@ namespace Momiji.Bot.V5.Core.InternalServer
 				streamWriter.WriteLine(message.ToString());
 			}
 		}
-		public void Append(string date, string moduleName, string message, ConsoleMessageType messageType = ConsoleMessageType.Info)
+		private void Append(string date, string moduleName, string message, ConsoleMessageType messageType = ConsoleMessageType.Info)
 		{
 			LogMessage logMessage = new LogMessage(date, moduleName, message, messageType);
 			Append(logMessage);
 		}
 
-		public void Append(DateTime time, string moduleName, string message, ConsoleMessageType messageType = ConsoleMessageType.Info)
+		private void Append(DateTime time, string moduleName, string message, ConsoleMessageType messageType = ConsoleMessageType.Info)
 		{
 			LogMessage logMessage = new LogMessage(time.ToString("HH:mm:ss"), moduleName, message, messageType);
 			Append(logMessage);
