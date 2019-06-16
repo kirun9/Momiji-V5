@@ -29,12 +29,12 @@ namespace Momiji.Bot.V5.Core.InternalServer
 			string output = "";
 			if (MessageType == ConsoleMessageType.Warning || MessageType == ConsoleMessageType.Error)
 			{
-				output += $"<tr><td class=\"row1{(colors.Item1 != "" ? " " + colors.Item1 : "")}\"><abbr title=\"{Date.ToString("MMM dd, YYYY")}\">{Date.ToString("HH:mm:ss")}</abbr></td><td class=\"row2{(colors.Item2 != "" ? " " + colors.Item2 : "")}\">{ModuleName}</td><td class=\"row3{(colors.Item3 != "" ? " " + colors.Item3 : "")}\">Caught Exception:</td></tr>\n";
+				output += $"<tr><td class=\"row1{(colors.Item1 != "" ? " " + colors.Item1 : "")}\"><abbr title=\"{Date.ToString("MMM dd, yyyy")}\">{Date.ToString("HH:mm:ss")}</abbr></td><td class=\"row2{(colors.Item2 != "" ? " " + colors.Item2 : "")}\">{ModuleName}</td><td class=\"row3{(colors.Item3 != "" ? " " + colors.Item3 : "")}\">Caught Exception:</td></tr>\n";
 				output += $"<tr><td class=\"multirow{(colors.Item3 != "" ? " " + colors.Item3 : "")}\" colspan=3>{m}</td></tr>\n";
 			}
 			else
 			{
-				output += $"<tr><td class=\"row1{(colors.Item1 != "" ? " " + colors.Item1 : "")}\"><abbr title=\"{Date.ToString("MMM dd, YYYY")}\">{Date.ToString("HH:mm:ss")}</abbr></td><td class=\"row2{(colors.Item2 != "" ? " " + colors.Item2 : "")}\">{ModuleName}</td><td class=\"row3{(colors.Item3 != "" ? " " + colors.Item3 : "")}\">{m}</td></tr>\n";
+				output += $"<tr><td class=\"row1{(colors.Item1 != "" ? " " + colors.Item1 : "")}\"><abbr title=\"{Date.ToString("MMM dd, yyyy")}\">{Date.ToString("HH:mm:ss")}</abbr></td><td class=\"row2{(colors.Item2 != "" ? " " + colors.Item2 : "")}\">{ModuleName}</td><td class=\"row3{(colors.Item3 != "" ? " " + colors.Item3 : "")}\">{m}</td></tr>\n";
 			}
 			return output;
 		}
