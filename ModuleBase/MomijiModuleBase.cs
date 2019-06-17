@@ -1,4 +1,6 @@
-﻿using Momiji.Bot.V5.Core.InternalServer;
+﻿using Discord.Commands;
+using Discord.WebSocket;
+using Momiji.Bot.V5.Core.InternalServer;
 using System;
 using System.Threading.Tasks;
 
@@ -7,6 +9,9 @@ namespace Momiji.Bot.V5.Modules
 	public abstract class MomijiModuleBase
 	{
 		private IConsole Console { get; set; }
+		public CommandService CommandService { get; private set; }
+		public DiscordSocketClient DiscordSocketClient { get; private set; }
+
 		private ModuleState _moduleState = ModuleState.Enabled;
 		/// <summary>
 		/// Version on which module base this module was created for
@@ -107,6 +112,15 @@ namespace Momiji.Bot.V5.Modules
 			{
 				throw new System.Security.SecurityException("Cannot set module hash after first method call");
 			}
+		}
+
+		public Task SetServices(CommandService commandService, DiscordSocketClient discordSocketClient, string key)
+		{
+			if (!Security.CheckKey(key, Hash))
+				throw new System.Security.SecurityException("Found unauthorized call to protected function");
+			CommandService = commandService;
+			DiscordSocketClient = discordSocketClient;
+			return Task.CompletedTask;
 		}
 
 		public async Task p_PreInitialize(string key)

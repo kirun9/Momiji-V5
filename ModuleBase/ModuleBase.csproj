@@ -132,6 +132,8 @@
     <Compile Include="Embed\XMLEmbedField.cs" />
     <Compile Include="Embed\XmlEmbedImage.cs" />
     <Compile Include="Embed\XmlEmbedImageType.cs" />
+    <Compile Include="GuildData\GuildData.cs" />
+    <Compile Include="Interface\IUserJoined.cs" />
     <Compile Include="Internal\ConsoleMessageType.cs" />
     <Compile Include="Interface\ICommandModule.cs" />
     <Compile Include="Interface\IConfig.cs" />

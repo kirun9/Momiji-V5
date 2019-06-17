@@ -1,4 +1,6 @@
-﻿using Momiji.Bot.V5.Core.Config;
+﻿using Discord.Commands;
+using Discord.WebSocket;
+using Momiji.Bot.V5.Core.Config;
 using Momiji.Bot.V5.Core.Discord;
 using Momiji.Bot.V5.Modules;
 using Momiji.Bot.V5.Modules.Interface;
@@ -165,6 +167,15 @@ namespace Momiji.Bot.V5.Core
 								await Task.Delay(1);
 							}
 						}
+					}
+					// Update and Load Modules resources
+					EnabledModules = Modules.Where((m) => { return m.Enabled; }).ToList();
+					foreach (var module in EnabledModules)
+					{
+						await module.SetServices(
+							MomijiHeart.ServiceCollection.First((service) => { return service.ServiceType == typeof(CommandService); }).ImplementationInstance as CommandService,
+							MomijiHeart.ServiceCollection.First((service) => { return service.ServiceType == typeof(DiscordSocketClient); }).ImplementationInstance as DiscordSocketClient,
+							Key + module.Guid);
 					}
 					// Add all Modules into Form
 					foreach (var module in Modules)

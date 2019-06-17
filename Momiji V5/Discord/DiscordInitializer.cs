@@ -130,6 +130,8 @@ namespace Momiji.Bot.V5.Core.Discord
 		{
 			MomijiHeart.ServiceCollection.AddSingleton(moduleBase.GetType(), moduleBase);
 			await CommandService.AddModuleAsync(type, MomijiHeart.ServiceProvider);
+
+			var scope = MomijiHeart.ServiceProvider.CreateScope();
 		}
 
 		internal async Task RemoveCommand(MomijiModuleBase moduleBase, Type type)

@@ -1,5 +1,9 @@
-﻿using Discord.Commands;
+﻿using Discord;
+using Discord.Commands;
+using Discord.WebSocket;
+using Momiji.Bot.V3.Modules.Embed;
 using Momiji.Bot.V5.Core.InternalServer;
+using Momiji.Bot.V5.GuildData;
 using Momiji.Bot.V5.Modules;
 using Momiji.Bot.V5.Modules.Interface;
 using System;
@@ -55,7 +59,7 @@ namespace __TestModule
 		[Command("Test")]
 		public async Task TestCommand()
 		{
-			await Context.Channel.SendMessageAsync($"Channel type: {Context.Channel.GetType()}");
+			
 		}
 	}
 }
