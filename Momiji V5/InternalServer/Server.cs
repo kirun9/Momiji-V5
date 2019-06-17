@@ -41,13 +41,20 @@ namespace Momiji.Bot.V5.Core.InternalServer
 
 		public Server()
 		{
+			var identity = System.Security.Principal.WindowsIdentity.GetCurrent();
+			var principal = new System.Security.Principal.WindowsPrincipal(identity);
+			var isAdministrator = principal.IsInRole(System.Security.Principal.WindowsBuiltInRole.Administrator);
+
 			listener = new HttpListener();
 			var host = Dns.GetHostEntry(Dns.GetHostName());
-			foreach (var ip in host.AddressList)
+			if (isAdministrator)
 			{
-				if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+				foreach (var ip in host.AddressList)
 				{
-					listener.Prefixes.Add($"http://{ip.ToString()}:{Port}/");
+					if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+					{
+						listener.Prefixes.Add($"http://{ip.ToString()}:{Port}/");
+					}
 				}
 			}
 			listener.Prefixes.Add($"http://localhost:{Port}/");

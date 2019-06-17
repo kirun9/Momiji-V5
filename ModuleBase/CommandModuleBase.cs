@@ -9,6 +9,9 @@ namespace Momiji.Bot.V5.Modules
 {
     public class CommandBase : ModuleBase<SocketCommandContext>
 	{
-
+		public CommandBase()
+		{
+			
+		}
 	}
 }

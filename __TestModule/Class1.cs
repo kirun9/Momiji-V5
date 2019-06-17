@@ -12,34 +12,16 @@ namespace __TestModule
 	{
 		public Class1(Guid callerGuid, IConsole console) : base(callerGuid, console) { }
 
-		public Class1() : base() { }
-
 		public override string ModuleName { get; } = "Test Module";
 		public override Guid Guid { get; } = Guid.Parse("fd8e0d76-ba55-4d90-9dc6-3daba8cd7292");
 
 		public override Task Initialize()
 		{
-			//File.WriteAllText(Path.Combine("modules", "guid.txt"), Guid.ToString());
 			Log("This is " + FullModuleName);
 			return Task.CompletedTask;
 		}
 		public override Task PreInitialize() { return Task.CompletedTask; }
 		public override Task PostInitialize() { return Task.CompletedTask; }
-
-		public Task LoadConfig()
-		{
-
-			return Task.CompletedTask;
-		}
-		public Task SaveConfig()
-		{
-
-			return Task.CompletedTask;
-		}
-		public string ConfigPath()
-		{
-			return @"C:\Users\Krystian\Desktop\Empty file.txt";
-		}
 
 		public ToolStripMenuItem GetCustomMenuItem()
 		{
@@ -73,7 +55,7 @@ namespace __TestModule
 		[Command("Test")]
 		public async Task TestCommand()
 		{
-			await Context.Channel.SendMessageAsync("This is test command send from \"" + ModuleBase.ModuleName ?? "Unknown" + "\" module.");
+			await Context.Channel.SendMessageAsync($"Channel type: {Context.Channel.GetType()}");
 		}
 	}
 }
