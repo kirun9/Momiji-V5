@@ -50,6 +50,38 @@ namespace __TestModule
 			var moduleInfo = await service.AddModuleAsync(typeof(Commands), provider);
 			Log(moduleInfo.ToString());
 		}
+
+		/*public Task Test(SocketGuildUser user)
+		{
+			foreach (Guild guild in GuildData.Data)
+			{
+				if (user.Guild.Id == guild.Id)
+				{
+
+				}
+			}
+			var dict = new System.Collections.Generic.Dictionary<string, string>();
+			dict.Add("{serverName}", );
+			Embed embed = new XMLEmbed()
+			{
+				Color = Discord.Color.Blue,
+				Description = "Welcome {user.nickname} on {serverName} server",
+				Image = new XmlEmbedImage()
+				{
+					Type = XmlEmbedImageType.UserProfile
+				},
+				Thumbnail = new XmlEmbedImage()
+				{
+					Type = XmlEmbedImageType.URL,
+					Url = @"",
+				},
+				Title = "Welcome!!!",
+			}.GetEmbed(DiscordSocketClient.CurrentUser, user, )
+
+
+
+			return Task.CompletedTask;
+		}*/
 	}
 
 	public class Commands : CommandBase

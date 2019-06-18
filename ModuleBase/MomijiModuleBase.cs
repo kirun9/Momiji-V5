@@ -9,8 +9,8 @@ namespace Momiji.Bot.V5.Modules
 	public abstract class MomijiModuleBase
 	{
 		private IConsole Console { get; set; }
-		public CommandService CommandService { get; private set; }
-		public DiscordSocketClient DiscordSocketClient { get; private set; }
+		public MyDiscord.CommandService CommandService { get; private set; }
+		public MyDiscord.DiscordSocketClient DiscordSocketClient { get; private set; }
 
 		private ModuleState _moduleState = ModuleState.Enabled;
 		/// <summary>
@@ -114,7 +114,7 @@ namespace Momiji.Bot.V5.Modules
 			}
 		}
 
-		public Task SetServices(CommandService commandService, DiscordSocketClient discordSocketClient, string key)
+		public Task SetServices(MyDiscord.CommandService commandService, MyDiscord.DiscordSocketClient discordSocketClient, string key)
 		{
 			if (!Security.CheckKey(key, Hash))
 				throw new System.Security.SecurityException("Found unauthorized call to protected function");

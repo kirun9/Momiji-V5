@@ -173,8 +173,8 @@ namespace Momiji.Bot.V5.Core
 					foreach (var module in EnabledModules)
 					{
 						await module.SetServices(
-							MomijiHeart.ServiceCollection.First((service) => { return service.ServiceType == typeof(CommandService); }).ImplementationInstance as CommandService,
-							MomijiHeart.ServiceCollection.First((service) => { return service.ServiceType == typeof(DiscordSocketClient); }).ImplementationInstance as DiscordSocketClient,
+							new Modules.MyDiscord.CommandService(MomijiHeart.ServiceCollection.First((service) => { return service.ServiceType == typeof(CommandService); }).ImplementationInstance as CommandService),
+							new Modules.MyDiscord.DiscordSocketClient(MomijiHeart.ServiceCollection.First((service) => { return service.ServiceType == typeof(DiscordSocketClient); }).ImplementationInstance as DiscordSocketClient),
 							Key + module.Guid);
 					}
 					// Add all Modules into Form

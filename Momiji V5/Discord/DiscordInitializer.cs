@@ -106,7 +106,7 @@ namespace Momiji.Bot.V5.Core.Discord
 					{
 						if (result is ExecuteResult executeResult)
 						{
-
+							
 						}
 					}
 				}
