@@ -9,8 +9,6 @@ namespace Momiji.Bot.V5.Modules
 	public abstract class MomijiModuleBase
 	{
 		private IConsole Console { get; set; }
-		public MyDiscord.CommandService CommandService { get; private set; }
-		public MyDiscord.DiscordSocketClient DiscordSocketClient { get; private set; }
 
 		private ModuleState _moduleState = ModuleState.Enabled;
 		/// <summary>
@@ -114,15 +112,6 @@ namespace Momiji.Bot.V5.Modules
 			}
 		}
 
-		public Task SetServices(MyDiscord.CommandService commandService, MyDiscord.DiscordSocketClient discordSocketClient, string key)
-		{
-			if (!Security.CheckKey(key, Hash))
-				throw new System.Security.SecurityException("Found unauthorized call to protected function");
-			CommandService = commandService;
-			DiscordSocketClient = discordSocketClient;
-			return Task.CompletedTask;
-		}
-
 		public async Task p_PreInitialize(string key)
 		{
 			if (!Security.CheckKey(key, Hash))
@@ -191,5 +180,18 @@ namespace Momiji.Bot.V5.Modules
 		public delegate void LogEventHandler(MomijiModuleBase sender, string message);
 		public delegate void ModuleStateHandler(MomijiModuleBase sender, ModuleStateChangedArgs args);
 
+
+
+		#region test
+
+		public MyDiscord.CommandService GetCommandService()
+		{
+			return _CommandService?.Invoke();
+		}
+
+		public event CommandServiceHandler _CommandService;
+		public delegate MyDiscord.CommandService CommandServiceHandler();
+
+		#endregion
 	}
 }

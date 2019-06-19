@@ -99,17 +99,13 @@ namespace Momiji.Bot.V5.Core
 							cModule.Guid = module.Guid;
 							cModule.Name = module.ModuleName;
 							cModule.ConfigCommands = new List<ConfigCommand>();
-							/*if (module is ICommandModule moduleBase)
+							if (module is ICommandModule moduleBase)
 							{
-								foreach (var command in moduleBase.getCommands())
+								foreach (var command in GetCommands(moduleBase))
 								{
-									ConfigCommand c = new ConfigCommand();
-									c.Enabled = true;
-									c.Guid = command.Guid;
-									c.Name = command.Name;
-									cModule.ConfigCommands.Add(c);
+									cModule.ConfigCommands.Add(command);
 								}
-							}*/
+							}
 							configRoot.ConfigModules.Add(cModule);
 						}
 						Settings.Config = configRoot;
@@ -118,7 +114,6 @@ namespace Momiji.Bot.V5.Core
 
 					foreach (var module in Modules) // Changing state of modules based on config
 					{
-						module.LogEvent += DiscordInitializer.ModuleBase_LogEvent;
 						foreach (var config in Settings.Config?.ConfigModules)
 						{
 							if (config.Guid == module.Guid)
@@ -128,6 +123,7 @@ namespace Momiji.Bot.V5.Core
 							}
 						}
 						module.ModuleStateEvent += ModuleStateChanged;
+						module._CommandService += GetCommandService;
 					}
 					// Get Modules using LINQ
 					var EnabledModules = Modules.Where((m) => { return m.Enabled; }).ToList();
@@ -167,15 +163,6 @@ namespace Momiji.Bot.V5.Core
 								await Task.Delay(1);
 							}
 						}
-					}
-					// Update and Load Modules resources
-					EnabledModules = Modules.Where((m) => { return m.Enabled; }).ToList();
-					foreach (var module in EnabledModules)
-					{
-						await module.SetServices(
-							new Modules.MyDiscord.CommandService(MomijiHeart.ServiceCollection.First((service) => { return service.ServiceType == typeof(CommandService); }).ImplementationInstance as CommandService),
-							new Modules.MyDiscord.DiscordSocketClient(MomijiHeart.ServiceCollection.First((service) => { return service.ServiceType == typeof(DiscordSocketClient); }).ImplementationInstance as DiscordSocketClient),
-							Key + module.Guid);
 					}
 					// Add all Modules into Form
 					foreach (var module in Modules)
@@ -230,8 +217,6 @@ namespace Momiji.Bot.V5.Core
 						foreach (var module in CommandModules)
 						{
 							await DiscordInitializer.Instance.AddCommands(module, ((ICommandModule)module).GetCommandClass());
-							//var commandModule = module as ICommandModule;
-							//await commandModule.RegisterCommands(DiscordInitializer.Instance.CommandService, DiscordInitializer.Instance.ServiceProvider);
 						}
 					}
 				}
@@ -244,6 +229,56 @@ namespace Momiji.Bot.V5.Core
 			{
 				throw new MomijiHeartException("Caught exception during module initialization. Cannot continue.", ex);
 			}
+		}
+
+		private static List<ConfigCommand> GetCommands(ICommandModule moduleBase)
+		{
+			List<ConfigCommand> commands = new List<ConfigCommand>();
+			var type = moduleBase.GetCommandClass();
+			var commandPrefix = "";
+			var typeAttributes = type.GetCustomAttributes(typeof(GroupAttribute), false);
+			foreach (var typeAttribute in typeAttributes)
+			{
+				var groupAttrribute = typeAttribute as GroupAttribute;
+				commandPrefix = groupAttrribute.Prefix;
+				break;
+			}
+			foreach (var method in type.GetMethods())
+			{
+				string commandName = "";
+				Guid guid = Guid.Empty;
+				foreach (var attribute in method.GetCustomAttributes(true))
+				{
+					if (attribute is CommandAttribute commandAttribute)
+					{
+						commandName = commandAttribute.Text;
+					}
+					/*else if (attribute is GuidAttribute guidAttribute)
+					{
+						guid = guidAttribute.Guid;
+					}*/
+				}
+				if (commandName != "")
+				{
+					commandName = commandPrefix + commandName;
+					ConfigCommand command = new ConfigCommand();
+					command.Enabled = true;
+					command.Name = commandName;
+					command.Guid = guid;
+					commands.Add(command);
+				}
+			}
+			return commands;
+		}
+
+		private static Modules.MyDiscord.CommandService GetCommandService()
+		{
+			return new Modules.MyDiscord.CommandService(MomijiHeart.ServiceCollection.First((service) => { return service.ServiceType == typeof(CommandService); }).ImplementationInstance as CommandService);
+		}
+
+		private static Modules.MyDiscord.DiscordSocketClient GetDiscordSocketClient()
+		{
+			return new Modules.MyDiscord.DiscordSocketClient(MomijiHeart.ServiceCollection.First((service) => { return service.ServiceType == typeof(DiscordSocketClient); }).ImplementationInstance as DiscordSocketClient);
 		}
 
 		internal static void EnableModule(MomijiModuleBase module)
