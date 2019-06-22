@@ -112,7 +112,8 @@
     <Reference Include="Discord.Net.WebSocket, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Discord.Net.WebSocket.2.0.1\lib\net46\Discord.Net.WebSocket.dll</HintPath>
     </Reference>
-    <Reference Include="kirun9 WinForms Controls">
+    <Reference Include="kirun9 WinForms Controls, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\MyLibs\kirun9 WinForms Controls.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Extensions.DependencyInjection, Version=1.1.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
@@ -198,10 +199,25 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BotKeyParser.cs" />
+    <Compile Include="Config\Config.cs" />
+    <Compile Include="Config\ConfigCommand.cs" />
+    <Compile Include="Config\ConfigModule.cs" />
+    <Compile Include="Config\ConfigRoot.cs" />
     <Compile Include="Controls\CircularPictureBox.cs">
       <SubType>Component</SubType>
     </Compile>
-
+    <Compile Include="Controls\Panels\Modules\ModuleItem.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Panels\Modules\ModuleItem.Designer.cs">
+      <DependentUpon>ModuleItem.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Panels\Modules\ModulePanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Panels\Modules\ModulePanel.Designer.cs">
+      <DependentUpon>ModulePanel.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\Panels\Settings\ConfirmationBox.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -236,7 +252,6 @@
       <DependentUpon>DiscordInitializer.cs</DependentUpon>
     </Compile>
     <Compile Include="Discord\DiscordSocketConfig.cs" />
-    <Compile Include="InternalServer\ConsoleMessageType.cs" />
     <Compile Include="Controls\Panels\ConsolePanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -258,10 +273,13 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ModuleCompatible.cs" />
+    <Compile Include="ModuleLoader.cs" />
     <Compile Include="Momiji Heart.cs" />
     <Compile Include="MomijiHeartException.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TempModule.cs" />
     <EmbeddedResource Include="Controls\Installer\SecondForm.resx">
       <DependentUpon>SecondForm.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -271,6 +289,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\Panels\ConsolePanel.resx">
       <DependentUpon>ConsolePanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Panels\Modules\ModuleItem.resx">
+      <DependentUpon>ModuleItem.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Panels\Modules\ModulePanel.resx">
+      <DependentUpon>ModulePanel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\Panels\Settings\ConfirmationBox.resx">
       <DependentUpon>ConfirmationBox.cs</DependentUpon>
@@ -317,6 +341,14 @@
     <EmbeddedResource Include="Resources\ConsoleHeader.html" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ModuleBase\ModuleBase.csproj">
+      <Project>{02dcd630-a521-46e5-986a-c11c6fcdf984}</Project>
+      <Name>ModuleBase</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\__Security\__Security.csproj">
+      <Project>{fe1ab331-18ba-4bdb-aa13-311df5510ee9}</Project>
+      <Name>__Security</Name>
+    </ProjectReference>
     <ProjectReference Include="..\__Serialization\__Serialization.csproj">
       <Project>{9DDDA85E-AA3B-4D3F-8708-913AE6454288}</Project>
       <Name>__Serialization</Name>

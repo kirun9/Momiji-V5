@@ -7,8 +7,10 @@ using System.Threading;
 
 namespace Momiji.Bot.V5.Core.InternalServer
 {
-	internal class Server
+	internal class Server : IConsole
 	{
+		private readonly ushort Port = 12369; 
+
 		private static int MaxLogs { get; } = 100;
 		private DateTime startDateTime;
 		private static Server _instance;
@@ -18,7 +20,7 @@ namespace Momiji.Bot.V5.Core.InternalServer
 		private string filePath;
 		private StreamWriter streamWriter;
 
-		private static Server Instance
+		internal static Server Instance
 		{
 			get
 			{
@@ -39,8 +41,23 @@ namespace Momiji.Bot.V5.Core.InternalServer
 
 		public Server()
 		{
+			var identity = System.Security.Principal.WindowsIdentity.GetCurrent();
+			var principal = new System.Security.Principal.WindowsPrincipal(identity);
+			var isAdministrator = principal.IsInRole(System.Security.Principal.WindowsBuiltInRole.Administrator);
+
 			listener = new HttpListener();
-			listener.Prefixes.Add("http://localhost:12369/");
+			var host = Dns.GetHostEntry(Dns.GetHostName());
+			if (isAdministrator)
+			{
+				foreach (var ip in host.AddressList)
+				{
+					if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+					{
+						listener.Prefixes.Add($"http://{ip.ToString()}:{Port}/");
+					}
+				}
+			}
+			listener.Prefixes.Add($"http://localhost:{Port}/");
 			startDateTime = DateTime.Now;
 			#region FileLogger
 			if (Program.ENABLE_FILE_LOGGING)
@@ -75,7 +92,6 @@ namespace Momiji.Bot.V5.Core.InternalServer
 				{
 					while (listener.IsListening)
 					{
-					
 						var context = listener.GetContext();
 						context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
 						context.Response.Headers.Add("Access-Control-Allow-Methods", "GET");
@@ -122,7 +138,7 @@ namespace Momiji.Bot.V5.Core.InternalServer
 				}
 				catch (HttpListenerException ex)
 				{
-					Log("Logger", ex.ToString(), ConsoleMessageType.Error);
+					Append(new LogMessage(DateTime.Now, "Logger", ex.ToString(), ConsoleMessageType.Error));
 					Start();
 				}
 			});
@@ -147,7 +163,13 @@ namespace Momiji.Bot.V5.Core.InternalServer
 			listener.Close();
 		}
 
-		public void Append(LogMessage message)
+
+		public void Append(string moduleName, string message, ConsoleMessageType type)
+		{
+			Append(new LogMessage(DateTime.Now, moduleName, message, type));
+		}
+
+		internal void Append(LogMessage message)
 		{
 			if (logMessages.Length >= MaxLogs)
 			{
@@ -175,22 +197,6 @@ namespace Momiji.Bot.V5.Core.InternalServer
 				streamWriter.WriteLine(message.ToString());
 			}
 		}
-		public void Append(string date, string moduleName, string message, ConsoleMessageType messageType = ConsoleMessageType.Info)
-		{
-			LogMessage logMessage = new LogMessage(date, moduleName, message, messageType);
-			Append(logMessage);
-		}
-
-		public void Append(DateTime time, string moduleName, string message, ConsoleMessageType messageType = ConsoleMessageType.Info)
-		{
-			LogMessage logMessage = new LogMessage(time.ToString("HH:mm:ss"), moduleName, message, messageType);
-			Append(logMessage);
-		}
-
-		public static void Log(string date, string moduleName, string message, ConsoleMessageType messageType = ConsoleMessageType.Info) => Instance.Append(date, moduleName, message, messageType);
-
-		public static void Log(LogMessage message) => Instance.Append(message);
-		public static void Log(string moduleName, string message, ConsoleMessageType messageType = ConsoleMessageType.Info) => Instance.Append(DateTime.Now, moduleName, message, messageType);
 
 		public static void StartServer() => Instance.Start();
 
