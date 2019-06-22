@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{02DCD630-A521-46E5-986A-C11C6FCDF984}</ProjectGuid>
+    <ProjectGuid>{87E59E3D-EF3D-488C-A435-5B81EB0D5BF9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Momiji.Bot.V5.Modules</RootNamespace>
-    <AssemblyName>ModuleBase</AssemblyName>
+    <RootNamespace>Momiji.Bot.V5.Modules.FortuneModule</RootNamespace>
+    <AssemblyName>Fortune Module</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -57,6 +57,9 @@
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Randomizer">
+      <HintPath>..\..\..\MyLibs\Randomizer.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.AppContext, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -114,7 +117,6 @@
     <Reference Include="System.Security.Cryptography.X509Certificates, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Security.Cryptography.X509Certificates.4.3.0\lib\net461\System.Security.Cryptography.X509Certificates.dll</HintPath>
     </Reference>
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -125,45 +127,25 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Attributes\GUIDAttribute.cs" />
-    <Compile Include="CommandModuleBase.cs" />
-    <Compile Include="Embed\StringExtension.cs" />
-    <Compile Include="Embed\XMLEmbed.cs" />
-    <Compile Include="Embed\XmlEmbedAuthor.cs" />
-    <Compile Include="Embed\XMLEmbedField.cs" />
-    <Compile Include="Embed\XmlEmbedImage.cs" />
-    <Compile Include="Embed\XmlEmbedImageType.cs" />
-    <Compile Include="GuildData\GuildData.cs" />
-    <Compile Include="Internal\ConsoleMessageType.cs" />
-    <Compile Include="Interface\ICommandModule.cs" />
-    <Compile Include="Interface\IConfig.cs" />
-    <Compile Include="Interface\ICustomDisable.cs" />
-    <Compile Include="Interface\ICustomModuleItem.cs" />
-    <Compile Include="Interface\ICustomToolStrip.cs" />
-    <Compile Include="Interface\IExternalResources.cs" />
-    <Compile Include="Interface\IIgnoreOtherModuleWarnings.cs" />
-    <Compile Include="InitializationState.cs" />
-    <Compile Include="Internal\IConsole.cs" />
-    <Compile Include="ModuleState.cs" />
-    <Compile Include="ModuleStateChangedArgs.cs" />
-    <Compile Include="MomijiModuleBase.cs" />
-    <Compile Include="MyDiscord\CommandService.cs" />
-    <Compile Include="MyDiscord\DiscordSocketClient.cs" />
+    <Compile Include="DailyFortune.cs" />
+    <Compile Include="DailyFortuneUser.cs" />
+    <Compile Include="FortuneCommands.cs" />
+    <Compile Include="FortuneModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\__Security\__Security.csproj">
-      <Project>{fe1ab331-18ba-4bdb-aa13-311df5510ee9}</Project>
-      <Name>__Security</Name>
+    <ProjectReference Include="..\ModuleBase\ModuleBase.csproj">
+      <Project>{02DCD630-A521-46E5-986A-C11C6FCDF984}</Project>
+      <Name>ModuleBase</Name>
     </ProjectReference>
     <ProjectReference Include="..\__Serialization\__Serialization.csproj">
       <Project>{9DDDA85E-AA3B-4D3F-8708-913AE6454288}</Project>
       <Name>__Serialization</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

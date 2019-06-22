@@ -20,7 +20,7 @@ namespace Momiji.Bot.V3.Modules.Embed
 		public List<XMLEmbedField> Fields { get; set; }
 		[XmlElement("Image", Order = 4)]
 		public XmlEmbedImage Image { get; set; }
-		[XmlElement("Url")]
+		[XmlElement("Url", Order = 7)]
 		public string Url { get; set; }
 
 		public Discord.Embed GetEmbed(IUser bot, IUser user, Dictionary<string, string> args)
@@ -37,15 +37,15 @@ namespace Momiji.Bot.V3.Modules.Embed
 			}
 			builder.WithColor(Color);
 			builder.WithCurrentTimestamp();
-			builder.WithDescription(Description.FormatString(bot, user, args));
+			builder.WithDescription(Description?.FormatString(bot, user, args));
 			foreach (var field in Fields)
 			{
 				builder.AddField(field.GetField(bot, user, args));
 			}
 			builder.WithFooter("Momiji v5 coded by kirun9");
-			builder.WithImageUrl(Image.GetUrl(bot, user));
-			builder.WithThumbnailUrl(Thumbnail.GetUrl(bot, user));
-			builder.WithTitle(Title.FormatString(bot, user, args));
+			builder.WithImageUrl(Image?.GetUrl(bot, user));
+			builder.WithThumbnailUrl(Thumbnail?.GetUrl(bot, user));
+			builder.WithTitle(Title?.FormatString(bot, user, args));
 			builder.WithUrl(Url);
 			return builder.Build();
 		}

@@ -18,7 +18,7 @@ namespace Momiji.Bot.V3.Modules.Embed
 		{
 			EmbedFieldBuilder builder = new EmbedFieldBuilder();
 			builder.WithIsInline(Inline);
-			builder.WithName(Value.FormatString(bot, user, args));
+			builder.WithName(Name.FormatString(bot, user, args));
 			builder.WithValue(Value.FormatString(bot, user, args));
 			return builder;
 		}
