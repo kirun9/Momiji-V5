@@ -89,9 +89,10 @@ namespace __TestModule
 		public Class1 ModuleBase { get; set; }
 
 		[Command("Test")]
+		[GUID("7ec947f8-e139-481e-8f30-538e094a5790")]
 		public async Task TestCommand()
 		{
-			
+			await Context.Channel.SendMessageAsync("Hello!");
 		}
 	}
 }

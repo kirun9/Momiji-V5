@@ -16,7 +16,7 @@ namespace Momiji.Bot.V5.Core
 {
 	class ModuleLoader
 	{
-		public static readonly Version ActualVersion = new Version("0.1.6.0");
+		public static readonly Version ActualVersion = new Version("0.1.7.0");
 		public static readonly Version LastCompatibility = new Version("0.1.5.0");
 
 		private static readonly Guid CallerGuid = Guid.NewGuid();
@@ -86,13 +86,19 @@ namespace Momiji.Bot.V5.Core
 								Log("Module of type " + type.FullName + " cannot be loaded because it is designed for previous version of Momiji and is not longer compatible.");
 							}*/
 						}
-					} 
+					}
 
-					if (Settings.Config == null)//Creating settings if null
+					if (Settings.Config == null) // Creating settings if null
 					{
-						ConfigRoot configRoot = new ConfigRoot();
-						configRoot.ConfigModules = new List<ConfigModule>();
-						foreach (var module in Modules)
+						Settings.Config = new ConfigRoot()
+						{
+							ConfigModules = new List<ConfigModule>()
+						};
+					}
+					foreach (var module in Modules) // Read and update module state based on config
+					{
+						var config = Settings.Config.ConfigModules.FirstOrDefault((m) => { return module.Guid == m.Guid; });
+						if (config == null)
 						{
 							ConfigModule cModule = new ConfigModule();
 							cModule.Enabled = true;
@@ -106,25 +112,39 @@ namespace Momiji.Bot.V5.Core
 									cModule.ConfigCommands.Add(command);
 								}
 							}
-							configRoot.ConfigModules.Add(cModule);
+							Settings.Config.ConfigModules.Add(cModule);
 						}
-						Settings.Config = configRoot;
-						await Settings.SaveConfig();
-					}
-
-					foreach (var module in Modules) // Changing state of modules based on config
-					{
-						foreach (var config in Settings.Config?.ConfigModules)
+						else
 						{
-							if (config.Guid == module.Guid)
+							module.ModuleState = config.Enabled ? ModuleState.Enabled : ModuleState.Disabled;
+							if (!config.Enabled)
+								Log("Module \"" + module.ModuleName + "\" is disabled in config. This module will be skipped during initialization process.", InternalServer.ConsoleMessageType.Info);
+							if (module is ICommandModule moduleBase)
 							{
-								module.ModuleState = config.Enabled ? ModuleState.Enabled : ModuleState.Disabled;
-								if (!config.Enabled) Log("Module \"" + module.ModuleName + "\" is disabled in config. This module will be skipped during initialization process.", InternalServer.ConsoleMessageType.Info);
+								foreach (var command in GetCommands(moduleBase))
+								{
+									var configCommand = config.ConfigCommands.FirstOrDefault((m) => {
+										if (m.Guid != null && command.Guid != null)
+										{
+											return m.Guid == command.Guid;
+										}
+										else
+										{
+											return m.Name.Equals(command.Name);
+										}
+									});
+									if (configCommand == null)
+									{
+										config.ConfigCommands.Add(command);
+									}
+								}
 							}
 						}
 						module.ModuleStateEvent += ModuleStateChanged;
 						module._CommandService += GetCommandService;
 					}
+					await Settings.SaveConfig();
+					
 					// Get Modules using LINQ
 					var EnabledModules = Modules.Where((m) => { return m.Enabled; }).ToList();
 					var ConfigModules = Modules.Where((m) => { return m is IConfig; }).ToList();
@@ -231,6 +251,7 @@ namespace Momiji.Bot.V5.Core
 			}
 		}
 
+		[System.Diagnostics.DebuggerStepThrough]
 		private static List<ConfigCommand> GetCommands(ICommandModule moduleBase)
 		{
 			List<ConfigCommand> commands = new List<ConfigCommand>();
@@ -253,10 +274,10 @@ namespace Momiji.Bot.V5.Core
 					{
 						commandName = commandAttribute.Text;
 					}
-					/*else if (attribute is GuidAttribute guidAttribute)
+					else if (attribute is GUIDAttribute guidAttribute)
 					{
 						guid = guidAttribute.Guid;
-					}*/
+					}
 				}
 				if (commandName != "")
 				{

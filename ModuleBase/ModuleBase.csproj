@@ -125,6 +125,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attributes\GUIDAttribute.cs" />
     <Compile Include="CommandModuleBase.cs" />
     <Compile Include="Embed\StringExtension.cs" />
     <Compile Include="Embed\XMLEmbed.cs" />

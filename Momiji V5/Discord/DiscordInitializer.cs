@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using Momiji.Bot.V5.Modules;
 using System.Reflection;
+using Momiji.Bot.V5.Core.Config;
 
 namespace Momiji.Bot.V5.Core.Discord
 {
@@ -99,6 +100,44 @@ namespace Momiji.Bot.V5.Core.Discord
 			{
 				var context = new SocketCommandContext(DiscordSocketClient, message);
 				Log(context.User, $"{message.Content} - sent from: {(context.IsPrivate ? "DM channel" : $"{context.Guild.Name} from #{context.Channel.Name}")} channel");
+
+				var search = CommandService.Search(context, argPos);
+				if (search.IsSuccess)
+				{
+					var commandInfo = search.Commands[0].Command;
+					foreach (var attribute in commandInfo.Attributes)
+					{
+						if (attribute is GUIDAttribute guidAttribue)
+						{
+							foreach (var command in Settings.Config.GetCommands())
+							{
+								if (command.Guid == guidAttribue.Guid)
+								{
+									if (!command.ConfigModule.Enabled)
+									{
+										await context.Channel.SendMessageAsync("Sorry, but that module was disabled");
+										return;
+									}
+									else
+									{
+										if (!command.Enabled)
+										{
+											await context.Channel.SendMessageAsync("Sorry, but that command was disabled");
+											Log("Command Disabled");
+											return;
+										}
+										else
+										{
+											break;
+										}
+									}
+								}
+							}
+							break;
+						}
+					}
+				}
+
 				try
 				{
 					var result = await CommandService.ExecuteAsync(context, argPos, MomijiHeart.ServiceProvider);
@@ -106,7 +145,8 @@ namespace Momiji.Bot.V5.Core.Discord
 					{
 						if (result is ExecuteResult executeResult)
 						{
-							
+							// TODO
+							// Not important
 						}
 					}
 				}
