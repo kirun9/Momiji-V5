@@ -78,8 +78,12 @@ namespace Momiji.Bot.V5.Core.Controls.Panels.Modules
 				{
 					try
 					{
-						string dir = new FileInfo(configModule.ConfigPath()).Directory.FullName;
-						System.Diagnostics.Process.Start(dir);
+						//string dir = new FileInfo(@".\data\" + configModule.ConfigFileName()).Directory.FullName;
+						System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
+						startInfo.FileName = "explorer";
+						startInfo.UseShellExecute = false;
+						startInfo.Arguments = @"/select," + Path.GetFullPath(@".\data\" + configModule.ConfigFileName());
+						System.Diagnostics.Process.Start(startInfo);
 					}
 					catch (Exception ex)
 					{

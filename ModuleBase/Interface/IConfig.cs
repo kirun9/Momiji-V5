@@ -6,6 +6,6 @@ namespace Momiji.Bot.V5.Modules.Interface
 	{
 		Task LoadConfig();
 		Task SaveConfig();
-		string ConfigPath();
+		string ConfigFileName();
 	}
 }
