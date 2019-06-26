@@ -17,7 +17,7 @@ namespace Momiji.Bot.V3.Modules.Embed
 			EmbedAuthorBuilder builder = new EmbedAuthorBuilder();
 			builder.Name = Name;
 			builder.Url = Url;
-			builder.IconUrl = Icon.GetUrl(bot, user);
+			builder.IconUrl = Icon?.GetUrl(bot, user);
 			return builder;
 		}
 	}

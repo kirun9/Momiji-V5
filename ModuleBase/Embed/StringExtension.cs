@@ -23,7 +23,7 @@ namespace Momiji.Bot.V3.Modules.Embed.Extensions
 
 			foreach (var entry in args)
 			{
-				temp = temp.Replace(entry.Key.Trim('{', '}'), entry.Value);
+				temp = temp.Replace("{" + entry.Key.Trim('{', '}') + "}", entry.Value);
 			}
 			return temp;
 		}
