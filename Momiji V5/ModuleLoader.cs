@@ -142,6 +142,7 @@ namespace Momiji.Bot.V5.Core
 						}
 						module.ModuleStateEvent += ModuleStateChanged;
 						module._CommandService += GetCommandService;
+						module._DiscordSocketClient += GetDiscordSocketClient;
 					}
 					await Settings.SaveConfig();
 					
