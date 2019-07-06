@@ -188,9 +188,15 @@ namespace Momiji.Bot.V5.Modules
 		{
 			return _CommandService?.Invoke();
 		}
+		public MyDiscord.DiscordSocketClient GetDiscordSocketClient()
+		{
+			return _DiscordSocketClient?.Invoke();
+		}
 
 		public event CommandServiceHandler _CommandService;
+		public event DiscordSocketClientHandler _DiscordSocketClient;
 		public delegate MyDiscord.CommandService CommandServiceHandler();
+		public delegate MyDiscord.DiscordSocketClient DiscordSocketClientHandler();
 
 		#endregion
 	}
