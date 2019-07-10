@@ -10,6 +10,7 @@ namespace Momiji.Bot.V5.Core
 	public class MomijiHeart
 	{
 		internal static IServiceCollection ServiceCollection { get; set; } = new ServiceCollection();
+		internal static Timer.Timer Timer { get; set; } = new Timer.Timer();
 		internal static IServiceProvider ServiceProvider { get => ServiceCollection.BuildServiceProvider(); }
 
 

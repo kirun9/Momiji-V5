@@ -10,6 +10,5 @@ namespace Momiji.Bot.V5.Modules.Interface
 	public interface ICommandModule
 	{
 		Type GetCommandClass();
-		Task RegisterCommands(CommandService service, IServiceProvider provider);
 	}
 }

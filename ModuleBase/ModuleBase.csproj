@@ -134,6 +134,9 @@
     <Compile Include="Embed\XmlEmbedImage.cs" />
     <Compile Include="Embed\XmlEmbedImageType.cs" />
     <Compile Include="GuildData\GuildData.cs" />
+    <Compile Include="Interface\IReciveMessageEvents.cs" />
+    <Compile Include="Interface\IReciveReactionEvents.cs" />
+    <Compile Include="Interface\ITimerEvents.cs" />
     <Compile Include="Internal\ConsoleMessageType.cs" />
     <Compile Include="Interface\ICommandModule.cs" />
     <Compile Include="Interface\IConfig.cs" />
@@ -144,6 +147,7 @@
     <Compile Include="Interface\IIgnoreOtherModuleWarnings.cs" />
     <Compile Include="InitializationState.cs" />
     <Compile Include="Internal\IConsole.cs" />
+    <Compile Include="Internal\TimerType.cs" />
     <Compile Include="ModuleState.cs" />
     <Compile Include="ModuleStateChangedArgs.cs" />
     <Compile Include="MomijiModuleBase.cs" />

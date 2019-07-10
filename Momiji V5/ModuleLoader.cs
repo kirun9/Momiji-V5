@@ -240,6 +240,39 @@ namespace Momiji.Bot.V5.Core
 							await DiscordInitializer.Instance.AddCommands(module, ((ICommandModule)module).GetCommandClass());
 						}
 					}
+
+					EnabledModules = Modules.Where((m) => { return m.Enabled && m is IReciveMessageEvents; }).ToList();
+					if (EnabledModules.Count > 0)
+					{
+						Log(EnabledModules.Count + " module" + (EnabledModules.Count == 1 ? " is" : "s are") + " reciving message events directly from discord chat.\nBe aware!", InternalServer.ConsoleMessageType.Attention);
+						foreach (IReciveMessageEvents module in EnabledModules)
+						{
+							DiscordInitializer.Instance.DiscordSocketClient.MessageDeleted += module.MessageDeleted;
+							DiscordInitializer.Instance.DiscordSocketClient.MessageReceived += module.MessageRecived;
+							DiscordInitializer.Instance.DiscordSocketClient.MessagesBulkDeleted += module.MessagesBulkDeleted;
+							DiscordInitializer.Instance.DiscordSocketClient.MessageUpdated += module.MessageUpdated;
+						}
+					}
+
+					EnabledModules = Modules.Where((m) => { return m.Enabled && m is IReciveReactionEvents; }).ToList();
+					if (EnabledModules.Count > 0)
+					{
+						Log(EnabledModules.Count + " module" + (EnabledModules.Count == 1 ? " is" : "s are") + " reciving reaction events directly from discord chat.\nBe aware!", InternalServer.ConsoleMessageType.Attention);
+						foreach (IReciveReactionEvents module in EnabledModules)
+						{
+							DiscordInitializer.Instance.DiscordSocketClient.ReactionAdded += module.ReactionAdded;
+							DiscordInitializer.Instance.DiscordSocketClient.ReactionRemoved += module.ReactionRemoved;
+							DiscordInitializer.Instance.DiscordSocketClient.ReactionsCleared += module.ReactionsCleared;
+						}
+					}
+					EnabledModules = Modules.Where((m) => { return m.Enabled && m is ITimerEvents; }).ToList();
+					if (EnabledModules.Count > 0)
+					{
+						foreach (ITimerEvents module in EnabledModules)
+						{
+							MomijiHeart.Timer.OnTimer += module.OnTimer;
+						}
+					}
 				}
 				else
 				{
@@ -295,7 +328,10 @@ namespace Momiji.Bot.V5.Core
 
 		private static Modules.MyDiscord.CommandService GetCommandService()
 		{
-			return new Modules.MyDiscord.CommandService(MomijiHeart.ServiceCollection.First((service) => { return service.ServiceType == typeof(CommandService); }).ImplementationInstance as CommandService);
+			return new Modules.MyDiscord.CommandService(
+				MomijiHeart.ServiceCollection.First((service) => { return service.ServiceType == typeof(CommandService); }).ImplementationInstance as CommandService,
+				DiscordInitializer.DiscordCfg.Data.CommandServiceConfig.CommandPrefix,
+				DiscordInitializer.DiscordCfg.Data.CommandServiceConfig.ReactOnMention);
 		}
 
 		private static Modules.MyDiscord.DiscordSocketClient GetDiscordSocketClient()

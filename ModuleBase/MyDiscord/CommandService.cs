@@ -23,9 +23,14 @@ namespace Momiji.Bot.V5.Modules.MyDiscord
 		//     Represents all Discord.Commands.TypeReader loaded within Discord.Commands.CommandService.
 		public ILookup<Type, TypeReader> TypeReaders { get => _CommandService.TypeReaders; }
 
-		public CommandService(Discord.Commands.CommandService service)
+		public string CommandPrefix { get; private set; }
+		public bool ReactOnMention { get; private set; }
+
+		public CommandService(Discord.Commands.CommandService service, string commandPrefix, bool reactOnMention)
 		{
 			_CommandService = service;
+			CommandPrefix = commandPrefix;
+			ReactOnMention = reactOnMention;
 		}
 		//
 		// Summary:
