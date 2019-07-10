@@ -40,7 +40,8 @@ namespace Momiji.Bot.V3.Modules.Embed
 			builder.WithDescription(Description?.FormatString(bot, user, args));
 			foreach (var field in Fields)
 			{
-				builder.AddField(field.GetField(bot, user, args));
+				if (field != null)
+					builder.AddField(field.GetField(bot, user, args));
 			}
 			builder.WithFooter("Momiji v5 coded by kirun9");
 			builder.WithImageUrl(Image?.GetUrl(bot, user));
