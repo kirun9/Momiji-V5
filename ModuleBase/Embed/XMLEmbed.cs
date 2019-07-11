@@ -8,7 +8,7 @@ namespace Momiji.Bot.V3.Modules.Embed
 	public class XMLEmbed
 	{
 		[XmlElement("Color", Order = 1)]
-		public Color Color { get; set; }
+		public XmlEmbedColor Color { get; set; }
 		[XmlElement("Title", Order = 6)]
 		public string Title { get; set; }
 		[XmlElement("Description", Order = 2)]
@@ -17,7 +17,7 @@ namespace Momiji.Bot.V3.Modules.Embed
 		public XmlEmbedImage Thumbnail { get; set; }
 		[XmlArray("Fields", Order = 3)]
 		[XmlArrayItem("Field", typeof(XMLEmbedField))]
-		public List<XMLEmbedField> Fields { get; set; }
+		public List<XMLEmbedField> Fields { get; set; } = new List<XMLEmbedField>();
 		[XmlElement("Image", Order = 4)]
 		public XmlEmbedImage Image { get; set; }
 		[XmlElement("Url", Order = 7)]

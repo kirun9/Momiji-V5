@@ -48,7 +48,7 @@ namespace Momiji.Bot.V5.Modules.FortuneModule
 		{
 			Data = new XMLEmbed()
 			{
-				Color = Discord.Color.Purple,
+				Color = new XmlEmbedColor(Color.Purple),
 				Title = "Fortune",
 				Fields = new List<XMLEmbedField>()
 				{

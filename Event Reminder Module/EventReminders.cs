@@ -1,4 +1,5 @@
-﻿using Momiji.Bot.V3.Serialization.XmlSerializer;
+﻿using Momiji.Bot.V3.Modules.Embed;
+using Momiji.Bot.V3.Serialization.XmlSerializer;
 using Momiji.Bot.V5.Core.InternalServer;
 using Momiji.Bot.V5.Modules.Interface;
 using Momiji.Bot.V5.Modules.Internal;
@@ -20,7 +21,10 @@ namespace Momiji.Bot.V5.Modules.EventReminderModule
 		public void LogMessage(string message) => Log(message);
 
 		#region Initialize methods
-		public override Task Initialize() => Task.CompletedTask;
+		public override Task Initialize()
+		{
+			return Task.CompletedTask;
+		}
 		public override Task PostInitialize() => Task.CompletedTask;
 		public override Task PreInitialize() => Task.CompletedTask;
 		#endregion
@@ -31,15 +35,16 @@ namespace Momiji.Bot.V5.Modules.EventReminderModule
 		#endregion
 
 		#region ITimerEvents
+
 		public void OnTimer(TimerType type)
 		{
-			if (type == TimerType.On1Minute)
+			if (type == TimerType.On10Seconds)
 			{
-				foreach (var event in xmlObject.Data.Events)
+				foreach (var e in xmlObject.Data.Events)
 				{
-					if (event.StartDate > DateTime.NowUTC.AddMinutes(1))
+					if ((e.StartDate - DateTime.UtcNow).TotalMinutes > 0)
 					{
-						LogMessage("Can display");
+
 					}
 				}
 			}
@@ -56,30 +61,56 @@ namespace Momiji.Bot.V5.Modules.EventReminderModule
 				Maintenances = new List<Maintenance>()
 			}
 		};
+		public XmlObject<XMLEmbed> xmlEmbedObject = new XmlObject<XMLEmbed>()
+		{
+			Data = new XMLEmbed()
+			{
+				Color = 0x0ABCDE,
+				Title = "{EventName}",
+				Description = "**Starts in {timeText}**",
+				Fields = new List<XMLEmbedField>()
+				{
+					new XMLEmbedField()
+					{
+						Name = "*Check your local timezone*",
+						Value = "*[Click Here](https://www.timeanddate.com/worldclock/fixedtime.html?msg={HTMl.EventName}&iso={HTML.Time})*",
+					}
+				},
+			}
+		};
 		public XmlSerializerConfig<Reminder> serializerConfig = new XmlSerializerConfig<Reminder>()
 		{
 			Directory = "data",
+			FileName = "EventReminders.xml",
+		};
+		public XmlSerializerConfig<XMLEmbed> embedConfig = new XmlSerializerConfig<XMLEmbed>()
+		{
+			Directory = "embed",
 			FileName = "EventReminders.xml",
 		};
 
 		public Task LoadResources()
 		{
 			xmlObject = XmlSerializer.Load(serializerConfig, xmlObject);
+			xmlEmbedObject = XmlSerializer.Load(embedConfig, xmlEmbedObject);
 			return Task.CompletedTask;
 		}
 		public Task ReloadResources()
 		{
 			xmlObject = XmlSerializer.Reload(serializerConfig);
+			xmlEmbedObject = XmlSerializer.Reload(embedConfig);
 			return Task.CompletedTask;
 		}
 		public Task ResaveResources()
 		{
 			XmlSerializer.ReSave(serializerConfig, xmlObject);
+			XmlSerializer.ReSave(embedConfig, xmlEmbedObject);
 			return Task.CompletedTask;
 		}
 		public Task SaveResources()
 		{
 			XmlSerializer.Save(serializerConfig, xmlObject);
+			XmlSerializer.Save(embedConfig, xmlEmbedObject);
 			return Task.CompletedTask;
 		}
 		public String ResourcePath() => @".\data\EventReminders.xml";

@@ -15,5 +15,19 @@ namespace Momiji.Bot.V5.Modules.EventReminderModule
 		public string EventName { get; set; }
 		[XmlAttribute]
 		public EventType EventType { get; set; }
+		/*public Display CheckDate(DateTime time)
+		{
+			
+		}*/
+	}
+
+	public enum Display
+	{
+		EventStart, EventMidway, EventEnd, MaintanenceStart, MaintanenceEnd
+	}
+
+	public static class DateTimeExtension
+	{
+		
 	}
 }

@@ -11,8 +11,36 @@ namespace Momiji.Bot.V5.Modules.EventReminderModule
 	public class EventReminderCommands : CommandBase
 	{
 		public EventReminders eventReminders { get; set; }
+		
+		public Reminder Data { get => eventReminders.xmlObject.Data; }
 		public IConsole console { get; set; }
 		
+		[Command("T")]
+		[GUID("4e470863-8a4b-472f-aaae-0ac3a3956bb4")]
+		public async Task T()
+		{
+			string getTimeText(Event e) {
+				var timeSpan = (e.StartDate - DateTime.UtcNow);
+				if (timeSpan.TotalMinutes >= 60)
+				{
+					return ((int) timeSpan.TotalHours) + " hour" + (timeSpan.TotalHours == 1 ? "" : "s");
+				}
+				else
+				{
+					return ((int) timeSpan.TotalMinutes) + " minute" + (timeSpan.TotalMinutes == 1 ? "" : "s");
+				}
+			}
+
+			var dictionary = new Dictionary<string, string>()
+			{
+				{ "{EventName}", Data.Events[0].EventName },
+				{ "{timeText}", getTimeText(Data.Events[0]) },
+				{ "{HTMl.EventName}", Data.Events[0].EventName.Replace(" ", "%20") },
+				{ "{HTML.Time}", Data.Events[0].StartDate.ToString("yyyyMMddTHHmmss") }
+			};
+			await Context.Channel.SendMessageAsync("", false, eventReminders.xmlEmbedObject.Data.GetEmbed(Context.Client.CurrentUser, Context.User, dictionary));
+		}
+
 		[Command("AddEvent")]
 		[Alias("Add Event")]
 		[Summary("Adds new event to event reminder. <start date> <midway date> <endDate> <eventName> [Normal/NonRanked/RPS]\nMidway date can be empty string")]

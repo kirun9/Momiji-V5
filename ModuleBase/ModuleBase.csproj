@@ -130,6 +130,7 @@
     <Compile Include="Embed\StringExtension.cs" />
     <Compile Include="Embed\XMLEmbed.cs" />
     <Compile Include="Embed\XmlEmbedAuthor.cs" />
+    <Compile Include="Embed\XmlEmbedColor.cs" />
     <Compile Include="Embed\XMLEmbedField.cs" />
     <Compile Include="Embed\XmlEmbedImage.cs" />
     <Compile Include="Embed\XmlEmbedImageType.cs" />

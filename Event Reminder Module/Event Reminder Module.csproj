@@ -121,6 +121,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CurrentEvent.cs" />
     <Compile Include="Event.cs" />
     <Compile Include="EventReminderCommands.cs" />
     <Compile Include="EventReminders.cs" />
