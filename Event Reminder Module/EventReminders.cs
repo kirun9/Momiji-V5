@@ -33,7 +33,16 @@ namespace Momiji.Bot.V5.Modules.EventReminderModule
 		#region ITimerEvents
 		public void OnTimer(TimerType type)
 		{
-
+			if (type == TimerType.On1Minute)
+			{
+				foreach (var event in xmlObject.Data.Events)
+				{
+					if (event.StartDate > DateTime.NowUTC.AddMinutes(1))
+					{
+						LogMessage("Can display");
+					}
+				}
+			}
 		}
 		#endregion
 
