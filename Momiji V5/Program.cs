@@ -25,9 +25,9 @@ namespace Momiji.Bot.V5.Core
 			System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = culture;
 			System.Threading.Thread.CurrentThread.CurrentCulture = culture;
 			System.Threading.Thread.CurrentThread.CurrentUICulture = culture;
+			Application.CurrentCulture = culture;
 			#endregion
 
-			Application.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("en-US");
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
 

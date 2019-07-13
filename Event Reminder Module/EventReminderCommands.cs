@@ -1,4 +1,6 @@
-﻿using Discord.Commands;
+﻿using Discord;
+using Discord.Commands;
+using Discord.WebSocket;
 using Momiji.Bot.V3.Modules.Embed;
 using Momiji.Bot.V5.Core.InternalServer;
 using System;
@@ -11,106 +13,165 @@ namespace Momiji.Bot.V5.Modules.EventReminderModule
 	public class EventReminderCommands : CommandBase
 	{
 		public EventReminders eventReminders { get; set; }
-		
-		public Reminder Data { get => eventReminders.xmlObject.Data; }
-		public IConsole console { get; set; }
-		
-		[Command("T")]
-		[GUID("4e470863-8a4b-472f-aaae-0ac3a3956bb4")]
-		public async Task T()
-		{
-			string getTimeText(Event e) {
-				var timeSpan = (e.StartDate - DateTime.UtcNow);
-				if (timeSpan.TotalMinutes >= 60)
-				{
-					return ((int) timeSpan.TotalHours) + " hour" + (timeSpan.TotalHours == 1 ? "" : "s");
-				}
-				else
-				{
-					return ((int) timeSpan.TotalMinutes) + " minute" + (timeSpan.TotalMinutes == 1 ? "" : "s");
-				}
-			}
-
-			var dictionary = new Dictionary<string, string>()
-			{
-				{ "{EventName}", Data.Events[0].EventName },
-				{ "{timeText}", getTimeText(Data.Events[0]) },
-				{ "{HTMl.EventName}", Data.Events[0].EventName.Replace(" ", "%20") },
-				{ "{HTML.Time}", Data.Events[0].StartDate.ToString("yyyyMMddTHHmmss") }
-			};
-			await Context.Channel.SendMessageAsync("", false, eventReminders.xmlEmbedObject.Data.GetEmbed(Context.Client.CurrentUser, Context.User, dictionary));
-		}
+		public List<Reminder> Data { get => eventReminders.tempXmlObject.Data; }
 
 		[Command("AddEvent")]
 		[Alias("Add Event")]
-		[Summary("Adds new event to event reminder. <start date> <midway date> <endDate> <eventName> [Normal/NonRanked/RPS]\nMidway date can be empty string")]
+		[Summary("Adds new event to event reminder. <start date> <midway date> <end date> <event name> [Normal/NonRanked/RPS]\nMidway date can be empty string, and must be in PDT or PST. Date must be provided in ISO 8601 format")]
 		[GUID("2ed63712-dd98-415a-a2ee-fbdd0f65414e")]
 		[RequireUserPermission(Discord.GuildPermission.ManageMessages)]
-		public async Task AddEvent(string startDate, string midwayDate, string endDate, string eventName, string eventType = "Normal")
+		public async Task AddEvent(string startDate, string midwayDate, string endDate, string eventName, ISocketMessageChannel channel = null, string eventType = "Normal")
 		{
 			try
 			{
+				channel = channel ?? Context.Channel;
 				var sDate = DateTime.Parse(startDate);
-				var mDate = midwayDate == "" ? DateTime.MinValue : DateTime.Parse(midwayDate);
+				var mDate = DateTime.MinValue;
+				if (midwayDate != "")
+				{
+					TimeZoneInfo info = TimeZoneInfo.Utc;
+					if (midwayDate.Contains("PST") || midwayDate.Contains("PDT"))
+					{
+						midwayDate = midwayDate.Replace("PST", "").Replace("PDT", "");
+						info = TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");
+					}
+					var tempDate = DateTime.Parse(midwayDate);
+					mDate = TimeZoneInfo.ConvertTimeToUtc(tempDate, info);
+				}
 				var eDate = DateTime.Parse(endDate);
 				EventType type = EventType.Normal;
 				Enum.TryParse(eventType, true, out type);
 				if (!((sDate < mDate && mDate < eDate && mDate > DateTime.MinValue) || (sDate < eDate && mDate == DateTime.MinValue)))
 				{
 					await Context.Channel.SendMessageAsync("Cannot create event with wrong dates!");
+					return;
 				}
 				else
 				{
-					Event e = new Event();
-					e.StartDate = sDate;
-					e.MidwayDate = mDate;
-					e.EndDate = eDate;
-					e.EventName = eventName;
-					e.EventType = type;
-					eventReminders.xmlObject.Data.Events.Add(e);
-					await eventReminders.SaveResources();
-					XMLEmbed embed = new XMLEmbed()
+					if (type == EventType.RPS)
 					{
-						Color = Discord.Color.Green,
-						Title = $"Event \"{eventName}\" added succesfully",
-						Fields = new List<XMLEmbedField>()
-						{
-							new XMLEmbedField()
-							{
-								Inline = true,
-								Name = "Start Date",
-								Value = sDate.ToString(),
-							},
-							(mDate > DateTime.MinValue) ?
-							new XMLEmbedField()
-							{
-								Inline = true,
-								Name = "Midway Date",
-								Value = mDate.ToString(),
-							}
-							: null
-							,
-							new XMLEmbedField()
-							{
-								Inline = true,
-								Name = "End Date",
-								Value = eDate.ToString(),
-							},
-							new XMLEmbedField()
-							{
-								Inline = false,
-								Name = "Event Type",
-								Value = Enum.GetName(typeof(EventType), type),
-							}
-						},
+						await Context.Channel.SendMessageAsync("Option for creating RPS events is not created yet.");
+						return;
+					}
+					Reminder temp = new Reminder()
+					{
+						ChannelId = channel.Id,
+						Name = eventName,
+						Action = EventAction.Start,
+						StartDate = sDate.AddDays(-3),
+						TriggerDate = sDate,
 					};
-					await Context.Channel.SendMessageAsync("", false, embed.GetEmbed(Context.Client.CurrentUser, Context.User, new Dictionary<string, string>()));
+					Data.Add(temp);
+					if (mDate > DateTime.MinValue)
+					{
+						temp = new Reminder()
+						{
+							ChannelId = channel.Id,
+							Name = eventName,
+							Action = EventAction.End,
+							StartDate = mDate.AddDays(-3),
+							TriggerDate = mDate,
+							Info = "Final Fever active!",
+						};
+						Data.Add(temp);
+					}
+					temp = new Reminder()
+					{
+						ChannelId = channel.Id,
+						Name = eventName,
+						StartDate = eDate.AddDays(-3),
+						Action = EventAction.End,
+						TriggerDate = eDate,
+					};
+					Data.Add(temp);
+					await eventReminders.ResaveResources();
 				}
+				#region hide this ...
+				XMLEmbed embed = new XMLEmbed()
+				{
+					Color = Color.Green,
+					Title = $"Event \"{eventName}\" added succesfully",
+					Fields = new List<XMLEmbedField>()
+					{
+						new XMLEmbedField()
+						{
+							Inline = true,
+							Name = "Start Date",
+							Value = sDate.ToString(),
+						},
+						((mDate > DateTime.MinValue) ?
+						new XMLEmbedField()
+						{
+							Inline = true,
+							Name = "Midway Date",
+							Value = mDate.ToString(),
+						}
+						: null)
+						,
+						new XMLEmbedField()
+						{
+							Inline = true,
+							Name = "End Date",
+							Value = eDate.ToString(),
+						},
+						new XMLEmbedField()
+						{
+							Inline = false,
+							Name = "Event Type",
+							Value = Enum.GetName(typeof(EventType), type),
+						}
+					},
+				};
+				var message = await Context.Channel.SendMessageAsync("", false, embed.GetEmbed(Context.Client.CurrentUser, Context.User, new Dictionary<string, string>()));
+				await message.ModifyAsync((f) => {
+					var e = new List<Embed>(message.Embeds)[0];
+
+					EmbedBuilder builder = e.GetEmbedBuilder();
+					builder.Description = "Updated " + builder.Description;
+					f.Embed = builder.Build();
+				});
+				#endregion
 			}
 			catch (Exception ex)
 			{
 				eventReminders.LogMessage(ex.ToString());
 			}
+		}
+	}
+
+	public static class EmbedExtension
+	{
+		public static EmbedBuilder GetEmbedBuilder(this Embed embed)
+		{
+			EmbedBuilder builder = new EmbedBuilder();
+			builder.WithAuthor(new EmbedAuthorBuilder()
+			{
+				IconUrl = embed.Author?.IconUrl,
+				Name = embed.Author?.Name,
+				Url = embed.Author?.Url,
+			});
+			builder.WithColor(embed.Color ?? Color.Blue);
+			builder.WithDescription(embed.Description);
+			builder.WithFooter(new EmbedFooterBuilder()
+			{
+				IconUrl = embed.Footer?.IconUrl,
+				Text = embed.Footer?.Text,
+			});
+			builder.WithImageUrl(embed.Image?.Url);
+			builder.WithThumbnailUrl(embed.Thumbnail?.Url);
+			builder.WithCurrentTimestamp();
+			builder.WithTitle(embed.Title);
+			builder.WithUrl(embed.Url);
+			foreach (var field in embed.Fields)
+			{
+				builder.AddField(new EmbedFieldBuilder()
+				{
+					IsInline = field.Inline,
+					Name = field.Name,
+					Value = field.Value,
+				});
+			}
+			return builder;
 		}
 	}
 }
