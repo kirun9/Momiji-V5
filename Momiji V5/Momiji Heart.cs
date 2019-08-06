@@ -85,7 +85,7 @@ namespace Momiji.Bot.V5.Core
 		
 		internal static void Log(string moduleName, string message, Exception exception, ConsoleMessageType type = ConsoleMessageType.Warning)
 		{
-			Log(moduleName, message + " " + exception.ToString(), type);
+			Log(moduleName, message + (exception != null ? " " + exception?.ToString() : ""), type);
 		}
 	}
 }

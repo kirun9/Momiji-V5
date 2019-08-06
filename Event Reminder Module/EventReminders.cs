@@ -46,7 +46,7 @@ namespace Momiji.Bot.V5.Modules.EventReminderModule
 			if (type == TimerType.On10Seconds)
 			{
 				List<Reminder> toRemove = new List<Reminder>();
-				IEnumerable<Reminder> reminders = tempXmlObject.Data.Where(r => r.StartDate <= DateTime.UtcNow && r.MessageId == 0);
+				IEnumerable<Reminder> reminders = tempXmlObject.Data.Where(r => r.StartDate <= DateTime.UtcNow && r.MessageId == 0 && r.TriggerDate >= DateTime.UtcNow);
 				foreach (var reminder in reminders)
 				{
 					var timeSpan = (reminder.TriggerDate - DateTime.UtcNow);
@@ -84,7 +84,7 @@ namespace Momiji.Bot.V5.Modules.EventReminderModule
 				{
 					var timeSpan = (r.TriggerDate - DateTime.UtcNow);
 					var minutesLeft = (int)Math.Ceiling(timeSpan.TotalMinutes);
-					var value = (r.StartDate < DateTime.UtcNow && r.MessageId != 0)
+					var value = (r.StartDate < DateTime.UtcNow && r.MessageId != 0 && r.TriggerDate >= DateTime.UtcNow)
 					&& ((r.MinutesLeft > 90 && r.MinutesLeft % 60 == 0) ? (r.MinutesLeft != minutesLeft) : (r.MinutesLeft <= 90 && r.MinutesLeft != minutesLeft));
 					if (r.MinutesLeft != minutesLeft)
 					{
@@ -136,7 +136,11 @@ namespace Momiji.Bot.V5.Modules.EventReminderModule
 					await reminder.Expire(GetDiscordSocketClient());
 					await SaveResources();
 				}
-				tempXmlObject.Data.RemoveAll(e => e.ExpirationDate < DateTime.UtcNow);
+				var removed = tempXmlObject.Data.RemoveAll(e => e.ExpirationDate < DateTime.UtcNow);
+				if (removed > 0)
+				{
+					await SaveResources();
+				}
 			}
 		}
 		#endregion

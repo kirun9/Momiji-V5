@@ -55,8 +55,18 @@ namespace Momiji.Bot.V5.Modules.EventReminderModule
 
 		public async Task Expire(DiscordSocketClient client)
 		{
-			var channel = client.GetChannel(ChannelId) as ISocketMessageChannel;
-			var message = await channel?.GetMessageAsync(MessageId, CacheMode.AllowDownload) as IUserMessage;
+			ISocketMessageChannel channel = null;
+			if (ChannelId != 0)
+			{
+				channel = client.GetChannel(ChannelId) as ISocketMessageChannel;
+			}
+			IUserMessage message = null;
+			if (MessageId != 0)
+			{
+				message = await channel?.GetMessageAsync(MessageId, CacheMode.AllowDownload) as IUserMessage;
+			}
+			if (message is null) return;
+
 			if (After.HasFlag(AfterReminder.Unpin))
 			{
 				await message?.UnpinAsync();

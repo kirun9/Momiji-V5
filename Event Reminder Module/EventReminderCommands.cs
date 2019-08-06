@@ -2,8 +2,6 @@
 using Discord.Commands;
 using Discord.WebSocket;
 using Momiji.Bot.V3.Modules.Embed;
-using Momiji.Bot.V3.Modules.Embed.Extensions;
-using Momiji.Bot.V5.Core.InternalServer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,18 +32,40 @@ namespace Momiji.Bot.V5.Modules.EventReminderModule
 			Embed e = embed.GetEmbed(Context.Client.CurrentUser, user, new Dictionary<string, string>());
 			await channel.SendMessageAsync(user.Mention, false, e);
 		}*/
+		
+		[Command("DeleteEvent")]
+		[Alias("Delete Event", "Remove Event")]
+		[Summary("Removes event reminder.")]
+		[Remarks("<event id>")]
+		[GUID("053770d5-0d9d-44c6-84ed-de3b139538aa")]
+		[RequireUserPermission(GuildPermission.ManageChannels)]
+		public async Task RemoveEvent(long eventId)
+		{
+			var reminders = Data.Where(r => r.EventId == eventId);
+			foreach (var reminder in reminders)
+			{
+				await reminder.Expire(eventReminders.GetDiscordSocketClient());
+			}
+			var removed = Data.RemoveAll(r => r.EventId == eventId);
+			if (removed > 0)
+			{
+				await Context.Channel.SendMessageAsync($"Event reminder{(removed != 1 ? "s" : "")} with ID {eventId} {(removed != 1 ? "was" : "were")} successfuly deleted.");
+			}
+		}
 
 		[Command("AddEvent")]
 		[Alias("Add Event")]
-		[Summary("Adds new event to event reminder. <start date> <midway date> <end date> <event name> [Normal/NonRanked]\nMidway date can be empty string, and must be in PDT or PST. Date must be provided in ISO 8601 format")]
+		[Summary("Adds new event to event reminder.")]
+		[Remarks("<start date> <midway date> <end date> <event name> [bannerUrl] [channelId] [Normal/NonRanked] \nMidway date can be empty string, and must be in PDT or PST. Date must be provided in ISO 8601 format")]
 		[GUID("2ed63712-dd98-415a-a2ee-fbdd0f65414e")]
 		[RequireUserPermission(GuildPermission.ManageMessages)]
-		public async Task AddEvent(string startDate, string midwayDate, string endDate, string eventName, ISocketMessageChannel channel = null, string eventType = "Normal")
+		public async Task AddEvent(string startDate, string midwayDate, string endDate, string eventName, string bannerUrl = "", ISocketMessageChannel channel = null, string eventType = "Normal")
 		{
 			try
 			{
 				var attachment = Context.Message.Attachments.FirstOrDefault();
 				channel = channel ?? Context.Channel;
+				var url = bannerUrl != "" ? bannerUrl : null;
 				var sDate = DateTime.Parse(startDate);
 				var mDate = DateTime.MinValue;
 				if (midwayDate != "")
@@ -82,7 +102,7 @@ namespace Momiji.Bot.V5.Modules.EventReminderModule
 						StartDate = sDate.AddDays(-1),
 						TriggerDate = sDate,
 						EventId = newId,
-						ImageUrl = attachment?.Url ?? "",
+						ImageUrl = attachment?.Url ?? url ?? "",
 						After = AfterReminder.Delete | AfterReminder.Unpin | AfterReminder.AfterTime,
 						AfterTime = AfterReminderTime.After24Hours,
 					};
@@ -97,7 +117,7 @@ namespace Momiji.Bot.V5.Modules.EventReminderModule
 							StartDate = mDate.AddDays(-1),
 							TriggerDate = mDate,
 							EventId = newId,
-							ImageUrl = attachment?.Url ?? "",
+							ImageUrl = attachment?.Url ?? url ??"",
 							After = AfterReminder.Delete | AfterReminder.Unpin | AfterReminder.AfterTime,
 							AfterTime = AfterReminderTime.After12Hours,
 						};
@@ -112,7 +132,7 @@ namespace Momiji.Bot.V5.Modules.EventReminderModule
 						TriggerDate = eDate,
 						Info = "Final Fever active!",
 						EventId = newId,
-						ImageUrl = attachment?.Url ?? "",
+						ImageUrl = attachment?.Url ?? url ?? "",
 						After = AfterReminder.Delete | AfterReminder.Unpin | AfterReminder.AfterTime,
 						AfterTime = AfterReminderTime.After12Hours,
 					};
@@ -152,16 +172,12 @@ namespace Momiji.Bot.V5.Modules.EventReminderModule
 							Inline = false,
 							Name = "Event Type",
 							Value = Enum.GetName(typeof(EventType), type),
-						},
-						(attachment?.Url != null ?
-						new XmlEmbedField()
-						{
-							Inline = false,
-							Name = "Image Url",
-							Value = $"[{attachment.Url}]({attachment.Url})",
-						} : null
-						),
+						}
 					},
+					Image = ((attachment?.Url ?? url) != null ?
+					(attachment?.Url != null) ? new XmlEmbedImage() { Type = XmlEmbedImageType.File, Url = attachment.Url } :
+					new XmlEmbedImage() { Type = XmlEmbedImageType.URL, Url = url }
+					: null),
 				};
 				var message = await Context.Channel.SendMessageAsync("", false, embed.GetEmbed(Context.Client.CurrentUser, Context.User, new Dictionary<string, string>()));
 				#endregion
@@ -171,9 +187,11 @@ namespace Momiji.Bot.V5.Modules.EventReminderModule
 				eventReminders.LogMessage(ex.ToString());
 			}
 		}
+
 		[Command("EditEventImage")]
 		[Alias("Edit Event Image", "EditImage")]
-		[Summary("Edits image in selected event. Usage: <eventName> <image as attachment>")]
+		[Summary("Edits image in selected event.")]
+		[Remarks("<eventName> <image as attachment>")]
 		[GUID("2ed63712-dd98-415a-a2ee-fbdd0f65414e")]
 		[RequireUserPermission(GuildPermission.ManageMessages)]
 		public async Task EditEventImage(long eventId)
@@ -190,7 +208,8 @@ namespace Momiji.Bot.V5.Modules.EventReminderModule
 
 		[Command("EditEventImage")]
 		[Alias("Edit Event Image", "EditImage")]
-		[Summary("Edits image in selected event. Usage: <eventName> <image url>")]
+		[Summary("Edits image in selected event.")]
+		[Remarks("<eventName> <image url>")]
 		[GUID("56a3df6c-26a7-4e42-9fea-01c4d24a284b")]
 		[RequireUserPermission(GuildPermission.ManageMessages)]
 		public async Task EditEventImage(long eventId, string url = "")

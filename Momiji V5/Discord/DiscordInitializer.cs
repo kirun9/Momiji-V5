@@ -144,8 +144,15 @@ namespace Momiji.Bot.V5.Core.Discord
 					{
 						if (result is ExecuteResult executeResult)
 						{
-							// TODO
-							// Not important
+							var ex = executeResult.Exception;
+							Log(context.User, $"Exception in {ex.TargetSite.DeclaringType.FullName} inside inside {ex.TargetSite.DeclaringType.Assembly.GetName().Name}:" +
+								$"\n{this.GetType().FullName}: {ex.Message}\nCommand: {message.Content}\nBy: {context.User.Username}\nChannel: {context.Channel.Name}\n\n", ex, InternalServer.ConsoleMessageType.Warning);
+							await context.Channel.SendMessageAsync($"Sorry. I couldn't handle that.\nPlease ask <@332164161129938944> for help. :worried:\nApproximated problem: {executeResult.ErrorReason} ({Enum.GetName(typeof(CommandError), (executeResult.Error.Value))})");
+						}
+						else
+						{
+							Log(context.User, $"Approximated problem: {result.ErrorReason} ({ Enum.GetName(typeof(CommandError), (result.Error.Value))})", null, InternalServer.ConsoleMessageType.Warning);
+							await context.Channel.SendMessageAsync($"Sorry. I couldn't handle that.\nPlease ask <@332164161129938944> for help. :worried:\nApproximated problem: {result.ErrorReason} ({Enum.GetName(typeof(CommandError), (result.Error.Value))})");
 						}
 					}
 				}
