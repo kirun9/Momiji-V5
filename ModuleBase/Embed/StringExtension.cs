@@ -28,4 +28,40 @@ namespace Momiji.Bot.V3.Modules.Embed.Extensions
 			return temp;
 		}
 	}
+
+	public static class EmbedExtension
+	{
+		public static EmbedBuilder GetEmbedBuilder(this Discord.Embed embed)
+		{
+			EmbedBuilder builder = new EmbedBuilder();
+			builder.WithAuthor(new EmbedAuthorBuilder()
+			{
+				IconUrl = embed.Author?.IconUrl,
+				Name = embed.Author?.Name,
+				Url = embed.Author?.Url,
+			});
+			builder.WithColor(embed.Color ?? Color.Blue);
+			builder.WithDescription(embed.Description);
+			builder.WithFooter(new EmbedFooterBuilder()
+			{
+				IconUrl = embed.Footer?.IconUrl,
+				Text = embed.Footer?.Text,
+			});
+			builder.WithImageUrl(embed.Image?.Url);
+			builder.WithThumbnailUrl(embed.Thumbnail?.Url);
+			builder.WithCurrentTimestamp();
+			builder.WithTitle(embed.Title);
+			builder.WithUrl(embed.Url);
+			foreach (var field in embed.Fields)
+			{
+				builder.AddField(new EmbedFieldBuilder()
+				{
+					IsInline = field.Inline,
+					Name = field.Name,
+					Value = field.Value,
+				});
+			}
+			return builder;
+		}
+	}
 }

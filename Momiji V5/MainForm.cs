@@ -45,7 +45,7 @@ namespace Momiji.Bot.V5.Core
 			MainPanel.Controls.Add(consolePanel);
 		}
 
-		#region MoveWindow
+		#region Move Window ...
 		private bool _mouseLeftDown = false;
 		private Point _lastMouseLocation;
 		private void MainForm_MouseDown(object sender, MouseEventArgs e)

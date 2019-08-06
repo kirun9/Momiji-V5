@@ -4,6 +4,7 @@
 	{
 		UserProfile,
 		BotProfile,
+		File,
 		URL
 	}
 

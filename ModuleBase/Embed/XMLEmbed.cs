@@ -5,7 +5,7 @@ using System.Xml.Serialization;
 
 namespace Momiji.Bot.V3.Modules.Embed
 {
-	public class XMLEmbed
+	public class XmlEmbed
 	{
 		[XmlElement("Color", Order = 1)]
 		public XmlEmbedColor Color { get; set; }
@@ -16,8 +16,8 @@ namespace Momiji.Bot.V3.Modules.Embed
 		[XmlElement("Thumbnail", Order = 5)]
 		public XmlEmbedImage Thumbnail { get; set; }
 		[XmlArray("Fields", Order = 3)]
-		[XmlArrayItem("Field", typeof(XMLEmbedField))]
-		public List<XMLEmbedField> Fields { get; set; } = new List<XMLEmbedField>();
+		[XmlArrayItem("Field", typeof(XmlEmbedField))]
+		public List<XmlEmbedField> Fields { get; set; } = new List<XmlEmbedField>();
 		[XmlElement("Image", Order = 4)]
 		public XmlEmbedImage Image { get; set; }
 		[XmlElement("Url", Order = 7)]
@@ -44,10 +44,10 @@ namespace Momiji.Bot.V3.Modules.Embed
 					builder.AddField(field.GetField(bot, user, args));
 			}
 			builder.WithFooter("Momiji v5 coded by kirun9");
-			builder.WithImageUrl(Image?.GetUrl(bot, user));
-			builder.WithThumbnailUrl(Thumbnail?.GetUrl(bot, user));
+			builder.WithImageUrl(Image?.GetUrl(bot, user)?.FormatString(bot, user, args));
+			builder.WithThumbnailUrl(Thumbnail?.GetUrl(bot, user)?.FormatString(bot, user, args));
 			builder.WithTitle(Title?.FormatString(bot, user, args));
-			builder.WithUrl(Url);
+			builder.WithUrl(Url?.FormatString(bot, user, args));
 			return builder.Build();
 		}
 	}

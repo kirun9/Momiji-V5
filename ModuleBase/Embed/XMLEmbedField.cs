@@ -5,7 +5,7 @@ using System.Xml.Serialization;
 
 namespace Momiji.Bot.V3.Modules.Embed
 {
-	public class XMLEmbedField
+	public class XmlEmbedField
 	{
 		[XmlElement("Name")]
 		public string Name { get; set; }

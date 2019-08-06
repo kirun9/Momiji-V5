@@ -89,13 +89,14 @@
 			// 
 			// borderPanel1
 			// 
+			this.borderPanel1.BorderPadding = new System.Windows.Forms.Padding(0, 0, 0, 0);
 			this.borderPanel1.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(250)))), ((int)(((byte)(97)))), ((int)(((byte)(33)))));
 			this.borderPanel1.Color2 = System.Drawing.Color.FromArgb(((int)(((byte)(250)))), ((int)(((byte)(97)))), ((int)(((byte)(33)))));
 			this.borderPanel1.Controls.Add(this.label1);
 			this.borderPanel1.Controls.Add(this.button2);
 			this.borderPanel1.Controls.Add(this.button1);
 			this.borderPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.borderPanel1.LinearGradientMode = System.Drawing.Drawing2D.LinearGradientMode.ForwardDiagonal;
+			this.borderPanel1.LinearGradientMode = System.Drawing.Drawing2D.LinearGradientMode.BackwardDiagonal;
 			this.borderPanel1.Location = new System.Drawing.Point(0, 0);
 			this.borderPanel1.Name = "borderPanel1";
 			this.borderPanel1.PenWidth = 4F;

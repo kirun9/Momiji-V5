@@ -2,6 +2,7 @@
 using Discord.Rest;
 using Discord.WebSocket;
 using Momiji.Bot.V3.Modules.Embed;
+using Momiji.Bot.V3.Modules.Embed.Extensions;
 using Momiji.Bot.V3.Serialization.XmlSerializer;
 using Momiji.Bot.V5.Core.InternalServer;
 using Momiji.Bot.V5.Modules.Interface;
@@ -45,57 +46,97 @@ namespace Momiji.Bot.V5.Modules.EventReminderModule
 			if (type == TimerType.On10Seconds)
 			{
 				List<Reminder> toRemove = new List<Reminder>();
-				foreach (var e in tempXmlObject.Data)
+				IEnumerable<Reminder> reminders = tempXmlObject.Data.Where(r => r.StartDate <= DateTime.UtcNow && r.MessageId == 0);
+				foreach (var reminder in reminders)
 				{
-					if (e.StartDate <= DateTime.UtcNow)
+					var timeSpan = (reminder.TriggerDate - DateTime.UtcNow);
+					reminder.MinutesLeft = (int)Math.Ceiling(timeSpan.TotalMinutes);
+					var channel = GetDiscordSocketClient().GetChannel(reminder.ChannelId) as ISocketMessageChannel;
+					var bot = GetDiscordSocketClient().CurrentUser;
+					var time = (timeSpan.TotalMinutes > 90 ? (int)Math.Ceiling(timeSpan.TotalHours) : (int)Math.Ceiling(timeSpan.TotalMinutes));
+					var timeunit = (timeSpan.TotalMinutes > 90 ? "hour" : "minute") + (time == 1 ? "" : "s");
+					var dictionary = new Dictionary<string, string>()
 					{
-						var timeSpan = (e.TriggerDate - DateTime.UtcNow);
-						if (e.MinutesLeft > (int)Math.Ceiling(timeSpan.TotalMinutes) || e.MinutesLeft <= 0)
-						{
-							e.MinutesLeft = (int) Math.Ceiling(timeSpan.TotalMinutes);
-							var channel = GetDiscordSocketClient().GetChannel(e.ChannelId) as ISocketMessageChannel;
-							var bot = GetDiscordSocketClient().CurrentUser;
-							var time = (timeSpan.TotalMinutes > 90 ? (int) Math.Ceiling(timeSpan.TotalHours) : (int) Math.Ceiling(timeSpan.TotalMinutes));
-							var timeunit = (timeSpan.TotalMinutes > 90 ? "hour" : "minute") + (time == 1 ? "" : "s");
-							var dictionary = new Dictionary<string, string>()
-							{
-								{ "{eventname}", e.Name },
-								{ "{action}" , (e.Action == EventAction.Start ? "Start" : (e.Action == EventAction.End ? "End" : "End")) },
-								{ "{action2}", (e.Action == EventAction.Start ? "started" : (e.Action == EventAction.End ? "ended" : "ended")) },
-								{ "{time}", time + "" },
-								{ "{unit}", timeunit },
-								{ "{info}", e.Info },
-								{ "{HTMl.EventName}", e.Name.Replace(" ", "%20") },
-								{ "{HTML.Time}", e.TriggerDate.ToString("yyyyMMddTHHmmss") },
-							};
-							IUserMessage message;
-							if (e.MessageId == 0)
-							{
-								message = await channel.SendMessageAsync("", false, xmlEmbedObject.Data.GetEmbed(bot, bot, dictionary));
-							}
-							else
-							{
-								message = await channel.GetMessageAsync(e.MessageId, CacheMode.AllowDownload) as IUserMessage;
-							}
-							e.MessageId = message.Id;
-							await message.ModifyAsync((f) => {
-								EmbedBuilder builder = (new List<IEmbed>(message.Embeds)[0] as Embed).GetEmbedBuilder();
-								builder.Description = (e.MinutesLeft > 0 ? "{action} in **{time}** {unit}\n{info}" : "This event has {action2}!");
-								foreach (var entry in dictionary)
-								{
-									builder.Description = builder.Description.Replace("{" + entry.Key.Trim('{', '}') + "}", entry.Value);
-								}
-								f.Embed = builder.Build();
-							});
-							await SaveResources();
-						}
+						{ "{eventname}", reminder.Name },
+						{ "{action}" , (reminder.Action == EventAction.Start ? "Start" : (reminder.Action == EventAction.End ? "Ends" : (reminder.Action == EventAction.MidwayEnd ? "Midway ends" : "Ends"))) },
+						{ "{action2}", (reminder.Action == EventAction.Start ? "started" : (reminder.Action == EventAction.End ? "ended" : (reminder.Action == EventAction.MidwayEnd ? "Midway ended" : "ended"))) },
+						{ "{time}", time + "" },
+						{ "{unit}", timeunit },
+						{ "{info}", reminder.Info },
+						{ "{HTMl.EventName}", reminder.Name.Replace(" ", "%20") },
+						{ "{HTML.Time}", reminder.TriggerDate.ToString("yyyyMMddTHHmmss") },
+						{ "{ImageUrl}" , reminder.ImageUrl },
+					};
+					var message = await channel.SendMessageAsync("", false, xmlEmbedObject.Data.GetEmbed(bot, bot, dictionary));
+					reminder.MessageId = message.Id;
+					if (reminder.After.HasFlag(AfterReminder.Unpin))
+					{
+						await message.PinAsync();
 					}
-				}
-				var i = tempXmlObject.Data.RemoveAll((elem) => { return elem.TriggerDate < DateTime.UtcNow; });
-				if (i > 0)
-				{
+					foreach (var expired in tempXmlObject.Data.Where(r => r.After.HasFlag(AfterReminder.OnNewReminder)))
+					{
+						await expired.Expire(GetDiscordSocketClient());
+					}
 					await SaveResources();
 				}
+
+				reminders = tempXmlObject.Data.Where((r) =>
+				{
+					var timeSpan = (r.TriggerDate - DateTime.UtcNow);
+					var minutesLeft = (int)Math.Ceiling(timeSpan.TotalMinutes);
+					var value = (r.StartDate < DateTime.UtcNow && r.MessageId != 0)
+					&& ((r.MinutesLeft > 90 && r.MinutesLeft % 60 == 0) ? (r.MinutesLeft != minutesLeft) : (r.MinutesLeft <= 90 && r.MinutesLeft != minutesLeft));
+					if (r.MinutesLeft != minutesLeft)
+					{
+						r.MinutesLeft = minutesLeft;
+					}
+					return value;
+				});
+				foreach (var reminder in reminders)
+				{
+					var timeSpan = (reminder.TriggerDate - DateTime.UtcNow);
+					reminder.MinutesLeft = (int)Math.Ceiling(timeSpan.TotalMinutes);
+					var channel = GetDiscordSocketClient().GetChannel(reminder.ChannelId) as ISocketMessageChannel;
+					var message = await channel.GetMessageAsync(reminder.MessageId, CacheMode.AllowDownload) as IUserMessage;
+					if (message is null)
+					{
+						reminder.MessageId = 0;
+						continue;
+					}
+					var bot = GetDiscordSocketClient().CurrentUser;
+					var time = (timeSpan.TotalMinutes > 90 ? (int)Math.Ceiling(timeSpan.TotalHours) : (int)Math.Ceiling(timeSpan.TotalMinutes));
+					var timeunit = (timeSpan.TotalMinutes > 90 ? "hour" : "minute") + (time == 1 ? "" : "s");
+					var dictionary = new Dictionary<string, string>()
+					{
+						{ "{eventname}", reminder.Name },
+						{ "{action}" , (reminder.Action == EventAction.Start ? "Start" : (reminder.Action == EventAction.End ? "Ends" : (reminder.Action == EventAction.MidwayEnd ? "Midway ends" : "Ends"))) },
+						{ "{action2}", (reminder.Action == EventAction.Start ? "started" : (reminder.Action == EventAction.End ? "ended" : (reminder.Action == EventAction.MidwayEnd ? "Midway ended" : "ended"))) },
+						{ "{time}", time + "" },
+						{ "{unit}", timeunit },
+						{ "{info}", reminder.Info },
+						{ "{HTMl.EventName}", reminder.Name.Replace(" ", "%20") },
+						{ "{HTML.Time}", reminder.TriggerDate.ToString("yyyyMMddTHHmmss") },
+						{ "{ImageUrl}" , reminder.ImageUrl },
+					};
+					await message.ModifyAsync((m) => {
+						var builder = (new List<IEmbed>(message.Embeds)[0] as Embed).GetEmbedBuilder();
+						builder.Description = (reminder.MinutesLeft > 0 ? "{action} in **{time}** {unit}\n{info}" : "This event has {action2}!");
+						foreach (var entry in dictionary)
+						{
+							builder.Description = builder.Description.Replace("{" + entry.Key.Trim('{', '}') + "}", entry.Value);
+						}
+						m.Embed = builder.Build();
+					});
+					await SaveResources();
+				}
+				
+				var remindersToRemove = tempXmlObject.Data.Where(e => e.ExpirationDate < DateTime.UtcNow);
+				foreach (var reminder in remindersToRemove)
+				{
+					await reminder.Expire(GetDiscordSocketClient());
+					await SaveResources();
+				}
+				tempXmlObject.Data.RemoveAll(e => e.ExpirationDate < DateTime.UtcNow);
 			}
 		}
 		#endregion
@@ -112,24 +153,29 @@ namespace Momiji.Bot.V5.Modules.EventReminderModule
 			Directory = "data",
 			FileName = "EventTemp.xml",
 		};
-		public XmlObject<XMLEmbed> xmlEmbedObject = new XmlObject<XMLEmbed>()
+		public XmlObject<XmlEmbed> xmlEmbedObject = new XmlObject<XmlEmbed>()
 		{
-			Data = new XMLEmbed()
+			Data = new XmlEmbed()
 			{
 				Color = 0x0ABCDE,
 				Title = "{eventname}",
 				Description = "{action} in **{time}** {unit}\n{info}",
-				Fields = new List<XMLEmbedField>()
+				Fields = new List<XmlEmbedField>()
 				{
-					new XMLEmbedField()
+					new XmlEmbedField()
 					{
 						Name = "*Check your local timezone*",
 						Value = "*[Click Here](https://www.timeanddate.com/worldclock/fixedtime.html?msg={HTMl.EventName}&iso={HTML.Time})*",
 					}
 				},
+				Image = new XmlEmbedImage()
+				{
+					Type = XmlEmbedImageType.URL,
+					Url = "{ImageUrl}",
+				},
 			}
 		};
-		public XmlSerializerConfig<XMLEmbed> embedConfig = new XmlSerializerConfig<XMLEmbed>()
+		public XmlSerializerConfig<XmlEmbed> embedConfig = new XmlSerializerConfig<XmlEmbed>()
 		{
 			Directory = "embed",
 			FileName = "EventReminders.xml",
@@ -161,14 +207,5 @@ namespace Momiji.Bot.V5.Modules.EventReminderModule
 		}
 		public String ResourcePath() => @".\data\EventReminders.xml";
 		#endregion
-
-
-		public void SortEvents()
-		{
-			tempXmlObject.Data.Sort((a, b) => {
-				var now = DateTime.UtcNow;
-				return ((int) ((a.TriggerDate - now) - (b.TriggerDate - now)).TotalMinutes);
-			});
-		}
 	}
 }

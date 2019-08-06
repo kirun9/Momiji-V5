@@ -128,10 +128,10 @@
     <Compile Include="Attributes\GUIDAttribute.cs" />
     <Compile Include="CommandModuleBase.cs" />
     <Compile Include="Embed\StringExtension.cs" />
-    <Compile Include="Embed\XMLEmbed.cs" />
+    <Compile Include="Embed\XmlEmbed.cs" />
     <Compile Include="Embed\XmlEmbedAuthor.cs" />
     <Compile Include="Embed\XmlEmbedColor.cs" />
-    <Compile Include="Embed\XMLEmbedField.cs" />
+    <Compile Include="Embed\XmlEmbedField.cs" />
     <Compile Include="Embed\XmlEmbedImage.cs" />
     <Compile Include="Embed\XmlEmbedImageType.cs" />
     <Compile Include="GuildData\GuildData.cs" />

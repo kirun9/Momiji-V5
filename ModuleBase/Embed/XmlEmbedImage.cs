@@ -17,6 +17,7 @@ namespace Momiji.Bot.V3.Modules.Embed
 				case XmlEmbedImageType.BotProfile: return bot.GetAvatarUrl();
 				case XmlEmbedImageType.URL: return Url;
 				case XmlEmbedImageType.UserProfile: return user.GetAvatarUrl();
+				case XmlEmbedImageType.File: return "attachment://" + Url;
 				default: return Url;
 			}
 		}

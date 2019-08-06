@@ -8,6 +8,7 @@ using System;
 using Momiji.Bot.V5.Modules;
 using System.Reflection;
 using Momiji.Bot.V5.Core.Config;
+using Momiji.Bot.V5.Core.Excel;
 
 namespace Momiji.Bot.V5.Core.Discord
 {
@@ -126,18 +127,16 @@ namespace Momiji.Bot.V5.Core.Discord
 											Log("Command Disabled");
 											return;
 										}
-										else
-										{
-											break;
-										}
 									}
+									//ExcelDatabase.CommandExecuted(command.Guid, context.User);
+									break;
 								}
 							}
 							break;
 						}
 					}
 				}
-
+				
 				try
 				{
 					var result = await CommandService.ExecuteAsync(context, argPos, MomijiHeart.ServiceProvider);

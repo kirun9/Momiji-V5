@@ -2,9 +2,11 @@
 using Discord.Commands;
 using Discord.WebSocket;
 using Momiji.Bot.V3.Modules.Embed;
+using Momiji.Bot.V3.Modules.Embed.Extensions;
 using Momiji.Bot.V5.Core.InternalServer;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Momiji.Bot.V5.Modules.EventReminderModule
@@ -15,15 +17,34 @@ namespace Momiji.Bot.V5.Modules.EventReminderModule
 		public EventReminders eventReminders { get; set; }
 		public List<Reminder> Data { get => eventReminders.tempXmlObject.Data; }
 
+		/*[Command("HappyBirthday")]
+		[GUID("be65e91d-142d-4e62-84e7-d054f944eee2")]
+		public async Task HappyBirthday(ISocketMessageChannel channel, IGuildUser user)
+		{
+			XMLEmbed embed = new XMLEmbed()
+			{
+				Color = Color.Purple,
+				Description = "A wish for you on your birthday,\n" +
+								"whatever you ask may you receive,\n" +
+								"whatever you seek may you find,\n" +
+								"whatever you wish may it be fulfilled\n" +
+								"on your birthday and always.",
+				Title = "Happy Birthday {user.nickname}",
+			};
+			Embed e = embed.GetEmbed(Context.Client.CurrentUser, user, new Dictionary<string, string>());
+			await channel.SendMessageAsync(user.Mention, false, e);
+		}*/
+
 		[Command("AddEvent")]
 		[Alias("Add Event")]
-		[Summary("Adds new event to event reminder. <start date> <midway date> <end date> <event name> [Normal/NonRanked/RPS]\nMidway date can be empty string, and must be in PDT or PST. Date must be provided in ISO 8601 format")]
+		[Summary("Adds new event to event reminder. <start date> <midway date> <end date> <event name> [Normal/NonRanked]\nMidway date can be empty string, and must be in PDT or PST. Date must be provided in ISO 8601 format")]
 		[GUID("2ed63712-dd98-415a-a2ee-fbdd0f65414e")]
-		[RequireUserPermission(Discord.GuildPermission.ManageMessages)]
+		[RequireUserPermission(GuildPermission.ManageMessages)]
 		public async Task AddEvent(string startDate, string midwayDate, string endDate, string eventName, ISocketMessageChannel channel = null, string eventType = "Normal")
 		{
 			try
 			{
+				var attachment = Context.Message.Attachments.FirstOrDefault();
 				channel = channel ?? Context.Channel;
 				var sDate = DateTime.Parse(startDate);
 				var mDate = DateTime.MinValue;
@@ -41,6 +62,7 @@ namespace Momiji.Bot.V5.Modules.EventReminderModule
 				var eDate = DateTime.Parse(endDate);
 				EventType type = EventType.Normal;
 				Enum.TryParse(eventType, true, out type);
+				var newId = (Data.Count > 0) ? Data.Select(reminder => reminder.EventId).Max() + 1 : 1;
 				if (!((sDate < mDate && mDate < eDate && mDate > DateTime.MinValue) || (sDate < eDate && mDate == DateTime.MinValue)))
 				{
 					await Context.Channel.SendMessageAsync("Cannot create event with wrong dates!");
@@ -50,7 +72,6 @@ namespace Momiji.Bot.V5.Modules.EventReminderModule
 				{
 					if (type == EventType.RPS)
 					{
-						await Context.Channel.SendMessageAsync("Option for creating RPS events is not created yet.");
 						return;
 					}
 					Reminder temp = new Reminder()
@@ -58,8 +79,12 @@ namespace Momiji.Bot.V5.Modules.EventReminderModule
 						ChannelId = channel.Id,
 						Name = eventName,
 						Action = EventAction.Start,
-						StartDate = sDate.AddDays(-3),
+						StartDate = sDate.AddDays(-1),
 						TriggerDate = sDate,
+						EventId = newId,
+						ImageUrl = attachment?.Url ?? "",
+						After = AfterReminder.Delete | AfterReminder.Unpin | AfterReminder.AfterTime,
+						AfterTime = AfterReminderTime.After24Hours,
 					};
 					Data.Add(temp);
 					if (mDate > DateTime.MinValue)
@@ -69,9 +94,12 @@ namespace Momiji.Bot.V5.Modules.EventReminderModule
 							ChannelId = channel.Id,
 							Name = eventName,
 							Action = EventAction.End,
-							StartDate = mDate.AddDays(-3),
+							StartDate = mDate.AddDays(-1),
 							TriggerDate = mDate,
-							Info = "Final Fever active!",
+							EventId = newId,
+							ImageUrl = attachment?.Url ?? "",
+							After = AfterReminder.Delete | AfterReminder.Unpin | AfterReminder.AfterTime,
+							AfterTime = AfterReminderTime.After12Hours,
 						};
 						Data.Add(temp);
 					}
@@ -82,25 +110,30 @@ namespace Momiji.Bot.V5.Modules.EventReminderModule
 						StartDate = eDate.AddDays(-3),
 						Action = EventAction.End,
 						TriggerDate = eDate,
+						Info = "Final Fever active!",
+						EventId = newId,
+						ImageUrl = attachment?.Url ?? "",
+						After = AfterReminder.Delete | AfterReminder.Unpin | AfterReminder.AfterTime,
+						AfterTime = AfterReminderTime.After12Hours,
 					};
 					Data.Add(temp);
 					await eventReminders.ResaveResources();
 				}
-				#region hide this ...
-				XMLEmbed embed = new XMLEmbed()
+				#region XMLEmbed embed = ...
+				XmlEmbed embed = new XmlEmbed()
 				{
 					Color = Color.Green,
-					Title = $"Event \"{eventName}\" added succesfully",
-					Fields = new List<XMLEmbedField>()
+					Title = $"Event \"{eventName}\" added succesfully\nEvent id: \"{newId}\"",
+					Fields = new List<XmlEmbedField>()
 					{
-						new XMLEmbedField()
+						new XmlEmbedField()
 						{
 							Inline = true,
 							Name = "Start Date",
 							Value = sDate.ToString(),
 						},
 						((mDate > DateTime.MinValue) ?
-						new XMLEmbedField()
+						new XmlEmbedField()
 						{
 							Inline = true,
 							Name = "Midway Date",
@@ -108,28 +141,29 @@ namespace Momiji.Bot.V5.Modules.EventReminderModule
 						}
 						: null)
 						,
-						new XMLEmbedField()
+						new XmlEmbedField()
 						{
 							Inline = true,
 							Name = "End Date",
 							Value = eDate.ToString(),
 						},
-						new XMLEmbedField()
+						new XmlEmbedField()
 						{
 							Inline = false,
 							Name = "Event Type",
 							Value = Enum.GetName(typeof(EventType), type),
-						}
+						},
+						(attachment?.Url != null ?
+						new XmlEmbedField()
+						{
+							Inline = false,
+							Name = "Image Url",
+							Value = $"[{attachment.Url}]({attachment.Url})",
+						} : null
+						),
 					},
 				};
 				var message = await Context.Channel.SendMessageAsync("", false, embed.GetEmbed(Context.Client.CurrentUser, Context.User, new Dictionary<string, string>()));
-				await message.ModifyAsync((f) => {
-					var e = new List<Embed>(message.Embeds)[0];
-
-					EmbedBuilder builder = e.GetEmbedBuilder();
-					builder.Description = "Updated " + builder.Description;
-					f.Embed = builder.Build();
-				});
 				#endregion
 			}
 			catch (Exception ex)
@@ -137,41 +171,37 @@ namespace Momiji.Bot.V5.Modules.EventReminderModule
 				eventReminders.LogMessage(ex.ToString());
 			}
 		}
-	}
-
-	public static class EmbedExtension
-	{
-		public static EmbedBuilder GetEmbedBuilder(this Embed embed)
+		[Command("EditEventImage")]
+		[Alias("Edit Event Image", "EditImage")]
+		[Summary("Edits image in selected event. Usage: <eventName> <image as attachment>")]
+		[GUID("2ed63712-dd98-415a-a2ee-fbdd0f65414e")]
+		[RequireUserPermission(GuildPermission.ManageMessages)]
+		public async Task EditEventImage(long eventId)
 		{
-			EmbedBuilder builder = new EmbedBuilder();
-			builder.WithAuthor(new EmbedAuthorBuilder()
+			var attachment = Context.Message.Attachments.FirstOrDefault();
+			var reminders = Data.Where(r => r.EventId == eventId);
+			foreach (var reminder in reminders)
 			{
-				IconUrl = embed.Author?.IconUrl,
-				Name = embed.Author?.Name,
-				Url = embed.Author?.Url,
-			});
-			builder.WithColor(embed.Color ?? Color.Blue);
-			builder.WithDescription(embed.Description);
-			builder.WithFooter(new EmbedFooterBuilder()
-			{
-				IconUrl = embed.Footer?.IconUrl,
-				Text = embed.Footer?.Text,
-			});
-			builder.WithImageUrl(embed.Image?.Url);
-			builder.WithThumbnailUrl(embed.Thumbnail?.Url);
-			builder.WithCurrentTimestamp();
-			builder.WithTitle(embed.Title);
-			builder.WithUrl(embed.Url);
-			foreach (var field in embed.Fields)
-			{
-				builder.AddField(new EmbedFieldBuilder()
-				{
-					IsInline = field.Inline,
-					Name = field.Name,
-					Value = field.Value,
-				});
+				reminder.ImageUrl = attachment?.Url ?? "";
 			}
-			return builder;
+			await eventReminders.SaveResources();
+			await Context.Channel.SendMessageAsync("Images edited\nNew Url: " + attachment?.Url ?? "");
+		}
+
+		[Command("EditEventImage")]
+		[Alias("Edit Event Image", "EditImage")]
+		[Summary("Edits image in selected event. Usage: <eventName> <image url>")]
+		[GUID("56a3df6c-26a7-4e42-9fea-01c4d24a284b")]
+		[RequireUserPermission(GuildPermission.ManageMessages)]
+		public async Task EditEventImage(long eventId, string url = "")
+		{
+			var reminders = Data.Where(r => r.EventId == eventId);
+			foreach (var reminder in reminders)
+			{
+				reminder.ImageUrl = url;
+			}
+			await eventReminders.SaveResources();
+			await Context.Channel.SendMessageAsync("Images edited\nNew Url: " + url ?? "");
 		}
 	}
 }

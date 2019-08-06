@@ -26,7 +26,7 @@ namespace Momiji.Bot.V5.Modules.FortuneModule
 			FileName = "fortuneUsers.xml"
 		};
 
-		private XmlSerializerConfig<XMLEmbed> EmbedConfig = new XmlSerializerConfig<XMLEmbed>()
+		private XmlSerializerConfig<XmlEmbed> EmbedConfig = new XmlSerializerConfig<XmlEmbed>()
 		{
 			Directory = "embed",
 			FileName = "fortuneEmbed.xml",
@@ -44,15 +44,15 @@ namespace Momiji.Bot.V5.Modules.FortuneModule
 			Version = new XmlSerializerVersion("1.0.0.0")
 		};
 
-		internal XmlObject<XMLEmbed> Embed = new XmlObject<XMLEmbed>()
+		internal XmlObject<XmlEmbed> Embed = new XmlObject<XmlEmbed>()
 		{
-			Data = new XMLEmbed()
+			Data = new XmlEmbed()
 			{
 				Color = new XmlEmbedColor(Color.Purple),
 				Title = "Fortune",
-				Fields = new List<XMLEmbedField>()
+				Fields = new List<XmlEmbedField>()
 				{
-					new XMLEmbedField()
+					new XmlEmbedField()
 					{
 						Inline = false,
 						Name = "Fortune #{fortuneNumber}",
