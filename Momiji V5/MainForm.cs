@@ -2,6 +2,7 @@
 using CefSharp.WinForms;
 using Momiji.Bot.V5.Core.Controls.Panels;
 using Momiji.Bot.V5.Core.Controls.Panels.Modules;
+using Momiji.Bot.V5.Core.Controls.Panels.RunCommand;
 using Momiji.Bot.V5.Core.Controls.Panels.Settings;
 using Momiji.Bot.V5.Modules;
 using System;
@@ -15,6 +16,7 @@ namespace Momiji.Bot.V5.Core
 	{
 		private ConsolePanel consolePanel;
 		private ModulePanel modulePanel;
+		private CommandTree commandTree;
 
 		delegate void DAddModule(MomijiModuleBase module);
 		private void PAddModule(MomijiModuleBase module)
@@ -29,7 +31,8 @@ namespace Momiji.Bot.V5.Core
 #if DEBUG
 			this.WindowState = FormWindowState.Normal;
 #else
-			this.WindowState = FormWindowStete.Maximized;
+			//this.WindowState = FormWindowStete.Maximized;
+			this.WindowState = FormWindowState.Normal;
 #endif
 			Cef.Initialize(new CefSettings());
 
@@ -42,6 +45,11 @@ namespace Momiji.Bot.V5.Core
 			modulePanel.Left = 3;
 			modulePanel.Show();
 
+			commandTree = new CommandTree();
+			commandTree.Top = 3;
+			commandTree.Left = 3;
+			commandTree.Show();
+			
 			MainPanel.Controls.Add(consolePanel);
 		}
 
@@ -136,6 +144,13 @@ namespace Momiji.Bot.V5.Core
 			settings.Show();
 			MainPanel.Controls.Clear();
 			MainPanel.Controls.Add(settings);
+		}
+
+		private void RunCommandButton_MouseClick(Object sender, MouseEventArgs e)
+		{
+			MainPanel.Controls.Clear();
+			commandTree.FillDiscordServers();
+			MainPanel.Controls.Add(commandTree);
 		}
 
 		internal void AddModule(MomijiModuleBase module)

@@ -14,7 +14,7 @@ namespace Momiji.Bot.V5.Core
 		internal static IServiceProvider ServiceProvider { get => ServiceCollection.BuildServiceProvider(); }
 
 
-		private const bool ConnectToDiscord = true;
+		internal static readonly bool ConnectToDiscord = System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable();
 
 		private static CancellationTokenSource cancellationToken = new CancellationTokenSource();
 

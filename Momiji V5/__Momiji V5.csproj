@@ -218,6 +218,13 @@
     <Compile Include="Controls\Panels\Modules\ModulePanel.Designer.cs">
       <DependentUpon>ModulePanel.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\Panels\RunCommand\CommandTree.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Panels\RunCommand\CommandTree.Designer.cs">
+      <DependentUpon>CommandTree.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Panels\RunCommand\CommandTreeItem.cs" />
     <Compile Include="Controls\Panels\Settings\ConfirmationBox.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -297,6 +304,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\Panels\Modules\ModulePanel.resx">
       <DependentUpon>ModulePanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Panels\RunCommand\CommandTree.resx">
+      <DependentUpon>CommandTree.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\Panels\Settings\ConfirmationBox.resx">
       <DependentUpon>ConfirmationBox.cs</DependentUpon>

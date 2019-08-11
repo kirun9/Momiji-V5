@@ -39,6 +39,7 @@
 			this.SettingsButton = new Momiji.Bot.V5.Core.Controls.TabButton();
 			this.MomijiIcon = new Momiji.Bot.V5.Core.Controls.CircularPictureBox();
 			this.MainPanel = new System.Windows.Forms.Panel();
+			this.RunCommandButton = new Momiji.Bot.V5.Core.Controls.TabButton();
 			this.TopPanel.SuspendLayout();
 			this.TabsPanel.SuspendLayout();
 			this.TabButtons.SuspendLayout();
@@ -126,6 +127,7 @@
 			this.TabButtons.Controls.Add(this.ConsoleButton);
 			this.TabButtons.Controls.Add(this.ModulesButton);
 			this.TabButtons.Controls.Add(this.SettingsButton);
+			this.TabButtons.Controls.Add(this.RunCommandButton);
 			this.TabButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.TabButtons.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
 			this.TabButtons.Location = new System.Drawing.Point(0, 70);
@@ -187,6 +189,17 @@
 			this.MainPanel.Size = new System.Drawing.Size(680, 396);
 			this.MainPanel.TabIndex = 2;
 			// 
+			// RunCommandButton
+			// 
+			this.RunCommandButton.ButtonText = "Run Command";
+			this.RunCommandButton.Location = new System.Drawing.Point(3, 171);
+			this.RunCommandButton.MarkerColor = System.Drawing.Color.FromArgb(((int)(((byte)(250)))), ((int)(((byte)(97)))), ((int)(((byte)(33)))));
+			this.RunCommandButton.Name = "RunCommandButton";
+			this.RunCommandButton.Selected = false;
+			this.RunCommandButton.Size = new System.Drawing.Size(144, 50);
+			this.RunCommandButton.TabIndex = 2;
+			this.RunCommandButton.ButtonClick += new System.Windows.Forms.MouseEventHandler(this.RunCommandButton_MouseClick);
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -225,6 +238,7 @@
 		private Controls.TabButton ConsoleButton;
 		private Controls.TabButton ModulesButton;
 		private Controls.TabButton SettingsButton;
+		private Controls.TabButton RunCommandButton;
 	}
 }
 

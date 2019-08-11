@@ -3,7 +3,7 @@ var timestep = 1000;
 const debug = false;
 var clicked = false;
 var selected;
-const consoleVersion = "v1.3";
+const consoleVersion = "v1.4";
 
 function init() {
     "use strict";
@@ -34,7 +34,7 @@ function startLoop() {
         if (!httpRequestStatus || httpRequestStatus.readyState === 0) {
             httpRequestStatus = getRequest();
             try {
-                httpRequestStatus.open("GET", "http://localhost:12369/log.html", true);
+                httpRequestStatus.open("GET", "http://" + self.location.hostname + ":12369/log.html", true);
                 httpRequestStatus.onreadystatechange = done;
                 httpRequestStatus.send(null);
             } catch (e) {
