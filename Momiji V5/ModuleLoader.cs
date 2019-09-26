@@ -38,6 +38,7 @@ namespace Momiji.Bot.V5.Core
 					List<Assembly> assemblies = new List<Assembly>();
 					DirectoryInfo info = new DirectoryInfo(path);
 					var DLLModuleFiles = Directory.GetFiles(info.FullName, "*.dll", SearchOption.AllDirectories);
+					AppDomain.CurrentDomain.AssemblyResolve += (sender, args) => null;
 
 					foreach (var DLLModuleFile in DLLModuleFiles)
 					{
@@ -326,17 +327,14 @@ namespace Momiji.Bot.V5.Core
 			return commands;
 		}
 
-		private static Modules.MyDiscord.CommandService GetCommandService()
+		private static CommandService GetCommandService()
 		{
-			return new Modules.MyDiscord.CommandService(
-				MomijiHeart.ServiceCollection.First((service) => { return service.ServiceType == typeof(CommandService); }).ImplementationInstance as CommandService,
-				DiscordInitializer.DiscordCfg.Data.CommandServiceConfig.CommandPrefix,
-				DiscordInitializer.DiscordCfg.Data.CommandServiceConfig.ReactOnMention);
+			return MomijiHeart.ServiceCollection.First((service) => { return service.ServiceType == typeof(CommandService); }).ImplementationInstance as CommandService;
 		}
 
-		private static Modules.MyDiscord.DiscordSocketClient GetDiscordSocketClient()
+		private static DiscordSocketClient GetDiscordSocketClient()
 		{
-			return new Modules.MyDiscord.DiscordSocketClient(MomijiHeart.ServiceCollection.First((service) => { return service.ServiceType == typeof(DiscordSocketClient); }).ImplementationInstance as DiscordSocketClient);
+			return MomijiHeart.ServiceCollection.First((service) => { return service.ServiceType == typeof(DiscordSocketClient); }).ImplementationInstance as DiscordSocketClient;
 		}
 
 		internal static void EnableModule(MomijiModuleBase module)

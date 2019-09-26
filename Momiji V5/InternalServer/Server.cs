@@ -54,8 +54,10 @@ namespace Momiji.Bot.V5.Core.InternalServer
 					if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
 					{
 						listener.Prefixes.Add($"http://{ip.ToString()}:{Port}/");
+						listener.Prefixes.Add($"http://{ip.ToString()}:80/");
 					}
 				}
+				listener.Prefixes.Add("http://localhost:80/");
 			}
 			listener.Prefixes.Add($"http://localhost:{Port}/");
 			startDateTime = DateTime.Now;
@@ -96,39 +98,83 @@ namespace Momiji.Bot.V5.Core.InternalServer
 						context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
 						context.Response.Headers.Add("Access-Control-Allow-Methods", "GET");
 						string webFilePath = context.Request.Url.AbsolutePath.Substring(1);
-						if (webFilePath.Equals("main.html"))
+						context.Response.StatusCode = 200;
+						if (context.Request.Url.Port == 80)
 						{
-							var writer = new StreamWriter(context.Response.OutputStream);
-							var html = Properties.Resources.ConsoleHeader;
-							html = html.Replace("<MomijiVersion />", GetType().Assembly.GetName().Version.ToString(4));
-							html = html.Replace("<Date />", "Started " + startDateTime.ToString("MMMM dd, yyyy 'at' HH:mm:ss", EnglishCulture));
-							writer.Write(html);
-							writer.Close();
+							try
+							{
+								var writer = new StreamWriter(context.Response.OutputStream);
+								var path = ".\\website\\" + ((webFilePath ?? "") == "" ? "index.html" : context.Request.Url.LocalPath.Substring(1));
+								var ext = Path.GetExtension(path);
+								if (ext == ".png")
+								{
+									var bytes = File.ReadAllBytes(path);
+									writer.Write("Content-Type: image/png\r\n");
+									writer.Write("Content-Length: " + bytes.Length + "\r\n");
+									writer.BaseStream.Write(bytes, 0, bytes.Length);
+									writer.Close();
+								}
+								else
+								{
+									var html = File.ReadAllText(path);
+									writer.Write(html);
+									writer.Close();
+								}
+							}
+							catch (FileNotFoundException)
+							{
+								context.Response.StatusCode = 404;
+							}
+							catch (Exception)
+							{
+								context.Response.StatusCode = 500;
+								//context.Response.StatusDescription = ex.Message;
+							}
 							context.Response.Close();
 						}
-						else if (webFilePath.Equals("console/ConsoleScript.js"))
+						else
 						{
-							var writer = new StreamWriter(context.Response.OutputStream);
-							writer.Write(Properties.Resources.ConsoleScript);
-							writer.Close();
-							context.Response.Close();
-						}
-						else if (webFilePath.Equals("console/ConsoleStyle.css"))
-						{
-							var writer = new StreamWriter(context.Response.OutputStream);
-							writer.Write(Properties.Resources.ConsoleStyle);
-							writer.Close();
-							context.Response.Close();
-						}
-						else if (webFilePath.Equals("log.html"))
-						{
-							var writer = new StreamWriter(context.Response.OutputStream);
-							var output = "<table>\n<colgroup><col width=\"70px\" /><col width=\"120px\" /><col width=\"430px\" /></colgroup>\n";
-							output += GetLog();
-							output += "\n</table>\n";
-							writer.Write(output);
-							writer.Close();
-							context.Response.Close();
+							switch (webFilePath)
+							{
+								case "main.html":
+								{
+									var writer = new StreamWriter(context.Response.OutputStream);
+									var html = Properties.Resources.ConsoleHeader;
+									html = html.Replace("<MomijiVersion />", GetType().Assembly.GetName().Version.ToString(4));
+									html = html.Replace("<Date />", "Started " + startDateTime.ToString("MMMM dd, yyyy 'at' HH:mm:ss", EnglishCulture));
+									writer.Write(html);
+									writer.Close();
+									context.Response.Close();
+									break;
+								}
+								case "console/ConsoleScript.js":
+								{
+									var writer = new StreamWriter(context.Response.OutputStream);
+									writer.Write(Properties.Resources.ConsoleScript);
+									writer.Close();
+									context.Response.Close();
+									break;
+								}
+								case "console/ConsoleStyle.css":
+								{
+									var writer = new StreamWriter(context.Response.OutputStream);
+									writer.Write(Properties.Resources.ConsoleStyle);
+									writer.Close();
+									context.Response.Close();
+									break;
+								}
+								case "log.html":
+								{
+									var writer = new StreamWriter(context.Response.OutputStream);
+									var output = "<table>\n<colgroup><col width=\"70px\" /><col width=\"120px\" /><col width=\"430px\" /></colgroup>\n";
+									output += GetLog();
+									output += "\n</table>\n";
+									writer.Write(output);
+									writer.Close();
+									context.Response.Close();
+									break;
+								}
+							}
 						}
 					}
 				}

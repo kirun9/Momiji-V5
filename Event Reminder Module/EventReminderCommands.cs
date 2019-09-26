@@ -56,10 +56,10 @@ namespace Momiji.Bot.V5.Modules.EventReminderModule
 		[Command("AddEvent")]
 		[Alias("Add Event")]
 		[Summary("Adds new event to event reminder.")]
-		[Remarks("<start date> <midway date> <end date> <event name> [bannerUrl] [channelId] [Normal/NonRanked] \nMidway date can be empty string, and must be in PDT or PST. Date must be provided in ISO 8601 format")]
+		[Remarks("<start date> <midway date> <end date> <event name> [dgf event id] [bannerUrl] [channelId] [Normal/NonRanked] \nMidway date can be empty string, and must be in PDT or PST. Date must be provided in ISO 8601 format")]
 		[GUID("2ed63712-dd98-415a-a2ee-fbdd0f65414e")]
 		[RequireUserPermission(GuildPermission.ManageMessages)]
-		public async Task AddEvent(string startDate, string midwayDate, string endDate, string eventName, string bannerUrl = "", ISocketMessageChannel channel = null, string eventType = "Normal")
+		public async Task AddEvent(string startDate, string midwayDate, string endDate, string eventName, int dgfEventId = 0, string bannerUrl = "", ISocketMessageChannel channel = null, string eventType = "Normal")
 		{
 			try
 			{
@@ -105,6 +105,7 @@ namespace Momiji.Bot.V5.Modules.EventReminderModule
 						ImageUrl = attachment?.Url ?? url ?? "",
 						After = AfterReminder.Delete | AfterReminder.Unpin | AfterReminder.AfterTime,
 						AfterTime = AfterReminderTime.After24Hours,
+						DgfEventId = dgfEventId,
 					};
 					Data.Add(temp);
 					if (mDate > DateTime.MinValue)
@@ -120,6 +121,7 @@ namespace Momiji.Bot.V5.Modules.EventReminderModule
 							ImageUrl = attachment?.Url ?? url ??"",
 							After = AfterReminder.Delete | AfterReminder.Unpin | AfterReminder.AfterTime,
 							AfterTime = AfterReminderTime.After12Hours,
+							DgfEventId = dgfEventId,
 						};
 						Data.Add(temp);
 					}
@@ -135,6 +137,7 @@ namespace Momiji.Bot.V5.Modules.EventReminderModule
 						ImageUrl = attachment?.Url ?? url ?? "",
 						After = AfterReminder.Delete | AfterReminder.Unpin | AfterReminder.AfterTime,
 						AfterTime = AfterReminderTime.After12Hours,
+						DgfEventId = dgfEventId,
 					};
 					Data.Add(temp);
 					await eventReminders.ResaveResources();
@@ -204,6 +207,23 @@ namespace Momiji.Bot.V5.Modules.EventReminderModule
 			}
 			await eventReminders.SaveResources();
 			await Context.Channel.SendMessageAsync("Images edited\nNew Url: " + attachment?.Url ?? "");
+		}
+
+		[Command("EditEventId")]
+		[Alias("Edit event Id", "Edit id")]
+		[Summary("Edits event dgf id")]
+		[Remarks("<eventId> <event dgf id>")]
+		[GUID("308f793c-803b-4723-ae3f-74d8bc49e9af")]
+		[RequireUserPermission(GuildPermission.ManageChannels)]
+		public async Task EditEventId(long eventId, int dgfId)
+		{
+			var reminders = Data.Where(r => r.EventId == eventId);
+			foreach (var reminder in reminders)
+			{
+				reminder.DgfEventId = dgfId;
+			}
+			await eventReminders.SaveResources();
+			await Context.Channel.SendMessageAsync("Event edited");
 		}
 
 		[Command("EditEventImage")]

@@ -21,7 +21,7 @@ namespace Momiji.Bot.V3.Modules.Embed.Extensions
 			temp = temp.Replace("{user.username}", user.Username);
 			temp = temp.Replace("{user.nickname}", nickname(user));
 
-			foreach (var entry in args)
+			foreach (var entry in args ?? new Dictionary<string, string>())
 			{
 				temp = temp.Replace("{" + entry.Key.Trim('{', '}') + "}", entry.Value);
 			}

@@ -1,5 +1,4 @@
 ﻿using Discord.WebSocket;
-using DiscordSocketClient = Momiji.Bot.V5.Modules.MyDiscord.DiscordSocketClient;
 using System;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
@@ -11,6 +10,8 @@ namespace Momiji.Bot.V5.Modules.EventReminderModule
 	{
 		[XmlAttribute]
 		public long EventId { get; set; }
+		[XmlAttribute]
+		public int DgfEventId { get; set; }
 		[XmlAttribute]
 		public DateTime TriggerDate { get; set; }
 		[XmlAttribute]

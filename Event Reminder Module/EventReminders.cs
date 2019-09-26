@@ -63,8 +63,10 @@ namespace Momiji.Bot.V5.Modules.EventReminderModule
 						{ "{time}", time + "" },
 						{ "{unit}", timeunit },
 						{ "{info}", reminder.Info },
-						{ "{HTMl.EventName}", reminder.Name.Replace(" ", "%20") },
-						{ "{HTML.Time}", reminder.TriggerDate.ToString("yyyyMMddTHHmmss") },
+						{ "{HTML.EventName}", reminder.Name.Replace(" ", "%20") },
+						{ "{HTML.Time}", reminder.TriggerDate.ToString("yyyy-MM-ddTHH:mm:ss") },
+						{ "{HTML.Action}",  (reminder.Action == EventAction.Start ? "s" : (reminder.Action == EventAction.End ? "e" : (reminder.Action == EventAction.MidwayEnd ? "me" : "e"))) },
+						{ "{HTML.EventId}", reminder.DgfEventId + "" },
 						{ "{ImageUrl}" , reminder.ImageUrl },
 					};
 					var message = await channel.SendMessageAsync("", false, xmlEmbedObject.Data.GetEmbed(bot, bot, dictionary));
@@ -114,8 +116,10 @@ namespace Momiji.Bot.V5.Modules.EventReminderModule
 						{ "{time}", time + "" },
 						{ "{unit}", timeunit },
 						{ "{info}", reminder.Info },
-						{ "{HTMl.EventName}", reminder.Name.Replace(" ", "%20") },
-						{ "{HTML.Time}", reminder.TriggerDate.ToString("yyyyMMddTHHmmss") },
+						{ "{HTML.EventName}", reminder.Name.Replace(" ", "%20") },
+						{ "{HTML.Time}", reminder.TriggerDate.ToString("yyyy-MM-ddTHH:mm:ss") },
+						{ "{HTML.Action}",  (reminder.Action == EventAction.Start ? "s" : (reminder.Action == EventAction.End ? "e" : (reminder.Action == EventAction.MidwayEnd ? "me" : "e"))) },
+						{ "{HTML.EventId}", reminder.DgfEventId + "" },
 						{ "{ImageUrl}" , reminder.ImageUrl },
 					};
 					await message.ModifyAsync((m) => {
@@ -169,7 +173,7 @@ namespace Momiji.Bot.V5.Modules.EventReminderModule
 					new XmlEmbedField()
 					{
 						Name = "*Check your local timezone*",
-						Value = "*[Click Here](https://www.timeanddate.com/worldclock/fixedtime.html?msg={HTMl.EventName}&iso={HTML.Time})*",
+						Value = "*[Click Here](http://momiji.website/time.html?datetime={HTML.Time}&eventname={HTML.EventName}&action={HTML.Action}&eventId={HTML.EventId})*",
 					}
 				},
 				Image = new XmlEmbedImage()
